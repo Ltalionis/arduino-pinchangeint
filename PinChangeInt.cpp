@@ -15,6 +15,7 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 	see google code project for latest, bugs and info http://code.google.com/p/arduino-pinchangeint/
+
 */
 #ifndef WProgram_h
 #include "WProgram.h"
@@ -25,6 +26,7 @@
 
 PCintPort::PCintPin PCintPort::PCintPin::pinDataAlloc[MAX_PIN_CHANGE_PINS];
 
+uint8_t PCintPort::arduinoPin=0;
 
 PCintPort PCintPort::pcIntPorts[] = {
 	PCintPort(0,PCMSK0),
@@ -32,7 +34,7 @@ PCintPort PCintPort::pcIntPorts[] = {
 	PCintPort(2,PCMSK2)
 };
 
-void PCintPort::addPin(uint8_t mode,uint8_t mask,PCIntvoidFuncPtr userFunc)
+void PCintPort::addPin(uint8_t arduinoPin, uint8_t mode,uint8_t mask,PCIntvoidFuncPtr userFunc)
 {
 	int i = 0;
 	PCintPin* p = PCintPin::pinDataAlloc;
@@ -46,6 +48,7 @@ void PCintPort::addPin(uint8_t mode,uint8_t mask,PCIntvoidFuncPtr userFunc)
 					p->PCintMode = mode;
 					*t = p;
 					p->PCintFunc = userFunc;
+					p->arduinoPin = arduinoPin;
 					// set the mask
 					pcmask |= p->PCIntMask = mask;
 					// enable the interrupt
@@ -76,6 +79,7 @@ void PCintPort::delPin(uint8_t mask)
 			p.PCintFunc = NULL;
 			do { // shuffle down as we pass through the list, filling the hole
 				*t = t[1];
+				t++;  // pekka's fix.  Nice catch!
 			} while (*t);
 			SREG = oldSREG;
 			return;
@@ -87,16 +91,19 @@ void PCintPort::delPin(uint8_t mask)
 /*
  * attach an interrupt to a specific pin using pin change interrupts.
  */
-void PCintPort::attachInterrupt(uint8_t pin, PCIntvoidFuncPtr userFunc, int mode)
+void PCintPort::attachInterrupt(uint8_t arduinoPin, PCIntvoidFuncPtr userFunc, int mode)
 {
-	uint8_t portNum = digitalPinToPort(pin);
+	uint8_t portNum = digitalPinToPort(arduinoPin);
 	if ((portNum == NOT_A_PORT) || (userFunc == NULL)) {
 		return;
 	}
 	// map pin to PCIR register
 	uint8_t portIndex = portNum - 2;
 	PCintPort& port = PCintPort::pcIntPorts[portIndex];
-	port.addPin(mode,digitalPinToBitMask(pin),userFunc);
+	port.addPin(arduinoPin,mode,digitalPinToBitMask(arduinoPin),userFunc);
+	// Added by GreyGnome... must set the initial value of PCintLast for it to be correct on the 1st interrupt.
+	// ...but even then, how do you define "correct"?  The user must specify.
+	port.PCintLast=port.portInputReg;
 }
 
 void PCintPort::detachInterrupt(uint8_t pin)
@@ -135,6 +142,10 @@ void PCintPort::PCint() {
 					|| ((p.PCintMode == FALLING) && !(curr & p.PCIntMask))
 					|| ((p.PCintMode == RISING) && (curr & p.PCIntMask))
 					) {
+					// Functionality added by GreyGnome
+					PCintPort::arduinoPin=p.arduinoPin;
+					// for debugging
+					//Serial.print('_');Serial.print(p.arduinoPin, HEX);Serial.print('_');
 					p.PCintFunc();
 				}
 			}
