@@ -1,5 +1,18 @@
 /*
 	PinChangeInt.h
+	---- VERSIONS ----------------------------------------------------------------------------
+	Version 1.1 Sat Dec  3 00:06:03 CST 2011
+	...updated to fix the "delPin" function as per "pekka"'s bug report.  Thanks!
+
+	Version 1.2 Sat Dec  3 Sat Dec  3 09:15:52 CST 2011
+	Modified Thu Sep  8 07:33:17 CDT 2011 by GreyGnome.  Fixes a bug with the initial port
+	value.  Now it sets the initial value to be the state of the port at the time of
+	attachInterrupt().  The line is port.PCintLast=port.portInputReg; in attachInterrupt().
+	See GreyGnome comment, below.
+
+	Added the "arduinoPin" variable, so the user's function will know exactly which pin on
+	the Arduino was triggered.
+	---- VERSIONS ----------------------------------------------------------------------------
 
 	See google code project for latest, bugs and info http://code.google.com/p/arduino-pinchangeint/
 	For more information Refer to avr-gcc header files, arduino source and atmega datasheet.
@@ -15,6 +28,7 @@
 	Please make any configuration changes in the accompanying PinChangeIntConfig.h file.
 	This will help avoid having to reset your config in the event of changes to the 
 	library code (just don't replace that file when you update).
+
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -68,7 +82,7 @@
 // of the handler.
 
 // if their is only one PCInt vector in use the code can be inlined
-// reducing latecncy and code size
+// reducing latency and code size
 #define	INLINE_PCINT
 #if ((defined(NO_PORTB_PINCHANGES) && defined(NO_PORTC_PINCHANGES)) || \
 			(defined(NO_PORTC_PINCHANGES) && defined(NO_PORTD_PINCHANGES)) || \
@@ -81,7 +95,7 @@
 // http://www.arduino.cc/playground/Main/PcInt
 #define	PCdetachInterrupt(pin)	PCintPort::detachInterrupt(pin)
 #define	PCattachInterrupt(pin,userFunc,mode) PCintPort::attachInterrupt(pin, userFunc,mode)
-
+#define PCgetArduinoPin() PCintPort::getArduinoPin()
 
 typedef void (*PCIntvoidFuncPtr)(void);
 
@@ -89,8 +103,11 @@ class PCintPort {
 	PCintPort(int index,volatile uint8_t& maskReg) :
 	portInputReg(*portInputRegister(index + 2)),
 	pcmask(maskReg),
-	PCICRbit(1 << index),
-	PCintLast(0)	{
+	PCICRbit(1 << index)
+	//PCintLast(0) // This was a bug.  Fixed by GreyGnome.  PCintLast is the last known state of the pins on the given port.
+		       // The value still needs to be set properly; it shouldn't start out as 0 but rather as the correct value
+		       // of the port's pins (which may not be 0).
+	{
 		for (int i = 0; i < 9; i++) {
 			pcIntPins[i] = NULL;
 		}
@@ -100,6 +117,7 @@ public:
 	static		void detachInterrupt(uint8_t pin);
 	INLINE_PCINT void PCint();
 	static		PCintPort	pcIntPorts[];
+	static		uint8_t		arduinoPin;
 	
 protected:
 	class PCintPin {
@@ -111,8 +129,9 @@ protected:
 		uint8_t 	PCintMode;
 		uint8_t		PCIntMask;
 		static PCintPin	pinDataAlloc[MAX_PIN_CHANGE_PINS];
+		uint8_t arduinoPin;
 	};
-	void		addPin(uint8_t mode,uint8_t mask,PCIntvoidFuncPtr userFunc);
+	void		addPin(uint8_t arduinoPin,uint8_t mode,uint8_t mask,PCIntvoidFuncPtr userFunc);
 	void		delPin(uint8_t mask);
 	volatile	uint8_t&		portInputReg;
 	volatile	uint8_t&		pcmask;
