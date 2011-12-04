@@ -101,7 +101,7 @@ typedef void (*PCIntvoidFuncPtr)(void);
 
 class PCintPort {
 	PCintPort(int index,volatile uint8_t& maskReg) :
-	portInputReg(*portInputRegister(index + 2)),
+	portInputReg(*portInputReg(index + 2)),
 	pcmask(maskReg),
 	PCICRbit(1 << index)
 	//PCintLast(0) // This was a bug.  Fixed by GreyGnome.  PCintLast is the last known state of the pins on the given port.
