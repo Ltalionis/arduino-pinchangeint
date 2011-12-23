@@ -1,1 +1,28 @@
+
 #summary How to Use the PinChangeInt Library
+
+=Introduction=
+
+How to use the PinChangeInt library in your own programs.  Here I assume you have properly installed the library.  See the Installation wiki page for more information.
+
+=Overview=
+=The Quick and Dirty Method=
+In your sketch, include:
+{{{
+#include <PinChangeInt.h>
+}}}
+Create a quick function that the library will call whenever your pin(s) are interrupted:
+{{{
+uint8_t latest_interrupted_pin;
+void quicfunc() {
+  latest_interrupted_pin=PCintPort::arduinoPin;
+}
+}}}
+Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal.  In `setup()`, attach an interrupt to your pin.  Here, we attach to pin 2:
+{{{
+PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
+}}}
+You are done.  In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
+=Reference=
+
+=Examples=
