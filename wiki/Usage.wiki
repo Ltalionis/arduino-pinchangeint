@@ -1,3 +1,4 @@
+
 #summary How to Use the PinChangeInt Library
 
 =Introduction=
@@ -5,7 +6,7 @@
 How to use the PinChangeInt library in your own programs.  Here I assume you have properly installed the library.  See the Installation wiki page for more information.
 
 =Overview=
-=The Quick and Dirty Method=
+==The Quick and Dirty Method==
 In your sketch, include:
 {{{
 #include <PinChangeInt.h>
@@ -22,6 +23,22 @@ Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal.  In `se
 PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
 }}}
 You are done.  In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
-=Reference=
+==Reference==
+===Public Methods===
+{{{
+void attachInterrupt(uint8_t pin, void *userFunc, int mode)
+}}}
+Attaches an interrupt to the given pin.  The interrupt will call the function `userFunc`, based on the `mode`.  The arguments are:
+  * `pin` - The pin on the Arduino that you want to attach an interrupt to.
+  * `userFunc` - A user-defined function that the interrupt routine will call.
+  * `mode` - The interrupt will trigger based on `mode`, which can be one of *RISING*, *FALLING*, or *CHANGE*
+{{{
+void detachInterrupt(uint8_t pin)
+}}}
+Stops interrupting on the given pin.
+{{{
+static uint8_t arduinoPin
+}}}
+This variable is given the value of the latest pin that caused an interrupt.  This pin will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
 
 =Examples=
