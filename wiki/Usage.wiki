@@ -1,5 +1,4 @@
-
-#summary How to Use the PinChangeInt Library
+How to Use the PinChangeInt Library
 
 =Introduction=
 
