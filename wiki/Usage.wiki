@@ -89,8 +89,10 @@ void quicfunc() {
 };
 
 void setup() {
-  PCintPort::attachInterrupt(PIN1, &quicfunc, CHANGE);  // add more attachInterrupt code as required
-  PCintPort::attachInterrupt(PIN2, &quicfunc, CHANGE);
+  pinMode(PIN1, INPUT); digitalWrite(PIN1, HIGH);
+  PCintPort::attachInterrupt(PIN1, &quicfunc, FALLING);  // add more attachInterrupt code as required
+  pinMode(PIN2, INPUT); digitalWrite(PIN2, HIGH);
+  PCintPort::attachInterrupt(PIN2, &quicfunc, FALLING);
   Serial.begin(115200);
   Serial.println("---------------------------------------");
 }
@@ -98,6 +100,8 @@ void setup() {
 uint8_t i;
 void loop() {
   uint8_t count;
+  Serial.print(".");
+  delay(1000);
   for (i=0; i < 20; i++) {
     if (interrupt_count[i] != 0) {
       count=interrupt_count[i];
@@ -107,7 +111,7 @@ void loop() {
         Serial.print("D");
         Serial.print(i, DEC);
       } else {
-        Serial.print("AI");
+        Serial.print("A");
         Serial.print(i-14, DEC);
       }
       Serial.print(" is ");
