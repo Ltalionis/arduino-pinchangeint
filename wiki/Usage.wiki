@@ -1,5 +1,5 @@
-#summary How to Use the PinChangeInt Library
 #labels Featured,Phase-Implementation
+How to Use the PinChangeInt Library
 
 =Introduction=
 
@@ -14,15 +14,43 @@ In your sketch, include:
 Create a quick function that the library will call whenever your pin(s) are interrupted:
 {{{
 uint8_t latest_interrupted_pin;
+uint8_t interrupt_count[20]={0}; // 20 possible arduino pins
 void quicfunc() {
   latest_interrupted_pin=PCintPort::arduinoPin;
+  interrupt_count[latest_interrupted_pin]++;
 }
 }}}
 Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal.  In `setup()`, attach an interrupt to your pin.  Here, we attach to pin 2:
 {{{
 PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
 }}}
-You are done.  In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
+In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
+{{{
+setup() {
+  Serial.begin(115200);
+  Serial.println("---------------------------------------");
+}
+
+uint8_t i;
+loop() {
+  for (i=0; i < 20; i++) {
+    if (interrupt_count[i] != 0) {
+      count=interrupt_count[i];
+      interrupt_count[i]=0;
+      Serial.print("Count for pin ");
+      if (i < 14) {
+        Serial.print("D");
+        Serial.print(i, DEC);
+      } else {
+        Serial.print("AI");
+        Serial.print(i-14, DEC);
+      }
+      Serial.print(" is ");
+      Serial.println(count, DEC);
+    }
+  }
+}
+}}}
 ==Reference==
 ===Public Methods===
 {{{
@@ -39,6 +67,52 @@ Stops interrupting on the given pin.
 {{{
 static uint8_t arduinoPin
 }}}
-This variable is given the value of the latest pin that caused an interrupt.  This pin will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
+This variable is assigned the value of the latest pin that caused an interrupt.  This pin will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
 
 =Examples=
+{{{
+#include <PinChangeInt.h>
+
+// These two pins are connected for interrupts.
+// Add more Pins at your leisure.
+// For the Analog Input pins, you can use 14, 15, 16, etc.
+// or you can use A0, A1, A2, etc.  The Arduino code comes with #define's
+// for the Analog Input pins.
+#define PIN1 2
+#define PIN2 3
+
+uint8_t latest_interrupted_pin;
+uint8_t interrupt_count[20]={0}; // 20 possible arduino pins
+void quicfunc() {
+  latest_interrupted_pin=PCintPort::arduinoPin;
+  interrupt_count[latest_interrupted_pin]++;
+};
+
+void setup() {
+  PCintPort::attachInterrupt(PIN1, &quicfunc, CHANGE);  // add more attachInterrupt code as required
+  PCintPort::attachInterrupt(PIN2, &quicfunc, CHANGE);
+  Serial.begin(115200);
+  Serial.println("---------------------------------------");
+}
+
+uint8_t i;
+void loop() {
+  uint8_t count;
+  for (i=0; i < 20; i++) {
+    if (interrupt_count[i] != 0) {
+      count=interrupt_count[i];
+      interrupt_count[i]=0;
+      Serial.print("Count for pin ");
+      if (i < 14) {
+        Serial.print("D");
+        Serial.print(i, DEC);
+      } else {
+        Serial.print("AI");
+        Serial.print(i-14, DEC);
+      }
+      Serial.print(" is ");
+      Serial.println(count, DEC);
+    }
+  }
+}
+}}}
