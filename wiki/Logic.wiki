@@ -48,7 +48,7 @@ Why is this important?  It may not be, for you.  This came up when I was program
 ==ATMega328p Pin Change Interrupts==
 In order to enable an Interrupt on any of the Arduino pins using the Pin Change Interrupts, you need to do the following:
   # Enable interrupts on the pin's Port by setting the proper bit in the PCICR register.
-Assuming that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any input pin on that port.
+*Assuming* that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any input pin on that port.
 
 ==PinChangeInt Details==
 
