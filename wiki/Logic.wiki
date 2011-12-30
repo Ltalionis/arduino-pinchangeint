@@ -66,5 +66,13 @@ Vector No.	Program Address	Source	Interrupt Definition
 6		0x005		PCINT2	Pin Change Interrupt Request 2
 }}}
 ==PinChangeInt Details==
+Here is how the library sets up the interrupts, and how it handles them once a pin is interrupted.  This discussion refers to version 1.3 of the PinChangeInt library.  Get it from the Downloads section of this Project.
+===Setting Up the Ports===
 
+===Enabling a Pin===
+===Responding to an Interrupt===
+===Disabling a Pin===
+===A===
+===A===
+===A===
 _to be continued_
