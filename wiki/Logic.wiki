@@ -7,6 +7,7 @@ The ATmega328p has two different kinds of interrupts: “external”, and “pin
 The PinChangeInt library is designed to handle the Arduino's pin change interrupts.  This is a description of how the ATmega328p Pin Change Interrupts work, and how the PinChangeInt library handles the situation.
 
 = Details =
+== ATmega328p Pins and Ports ==
 The Arduino's pins are shown below, in parentheses.  The corresponding pin numbers on the ATmega 328p are shown alongside the diagram of the 28-pin dip package:
 {{{
                   +-\/-+
