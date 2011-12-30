@@ -46,6 +46,7 @@ This is a summary of the Arduino-to-port mappings that are available to you:
 Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the PORT state register.
 
 ==ATMega328p Pin Change Interrupts==
+===Enabling===
 In order to enable an Interrupt on any of the Arduino pins using the Pin Change Interrupts, you need to do the following:
   # Enable interrupts on the pin's Port by setting the proper bit in the PCICR register.
   # Enable each pin for interrupts that you care to, by setting the appropriate PCMSK0, PCMSK1, or PCMSK2 register with the bit position of the corresponding pin.  PCMSK0 corresponds to PORT B, PCMSK1 corresponds to PORT C, and PCMSK2 corresponds to PORT D.
@@ -54,6 +55,7 @@ In order to enable an Interrupt on any of the Arduino pins using the Pin Change 
 Note that enabling interrupts globally is as simple as setting the Global Interrupt Enable flag, which is bit 7 of the Status Register (SREG).  This bit is enabled by default.  Also interesting is that the flag is cleared by hardware as soon as an interrupt takes place, and it's set by the Return from Interrupt instruction when the Interrupt routine returns.  It is possible for an interrupt to set this flag, thereby enabling nested interrupts.  This is not done by the PinChangeInt library- that is, nested interrupts are not enabled under the covers.
 
 ===Priority===
+Here is the beginning of Table 11-1 from the ATmega328p datasheet (http://www.atmel.com/dyn/resources/prod_documents/doc8025.pdf).  It shows the priorities of all the interrupts on the computer.  Note that the Pin Change Interrupt interrupts are quite high priority.  If you do not use the external interrupts, then they are second only to the reset signal.  Note, too, that pins set up on PORTB will have a higher interrupt priority than PORT C, which is higher than PORT D. 
 {{{
 Vector No.	Program Address	Source	Interrupt Definition
 1		0x000		RESET	External Pin, Power-on Reset, Brown-out Reset and Watchdog System Reset
