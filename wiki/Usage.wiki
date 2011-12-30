@@ -74,9 +74,9 @@ There are a small number of parameters that the programmer can modify to limit t
 
 That said, I yearn to get rid of these parameters.  So far, I have not found anyone that really uses them (including myself), and I have seen some examples where the programmer didn't set them properly.  So I consider this file somewhat broken.  But not TOO broken, because the fix requires dynamic data structures which could affect speed of the interrupt routine.  That's no good.  But then again, if speed was *that* critical, you'd be programming in assembly, wouldn't you?  :-)
 ===Limit on the Number of Pins===
-====PinChangeIntConfig.h: MAX_PIN_CHANGE_PINS====
+====`PinChangeIntConfig.h`:MAX_PIN_CHANGE_PINS====
 In versions prior to and including 1.2 of the library, the variable MAX_PIN_CHANGE_PINS was used to limit memory usage.  As of version 1.3 this variable is no longer used, as pins are added dynamically.
-===Memory Utilization===
+===`PinChangeIntConfig.h`:Memory Utilization===
 There are 3 #define's in the `PinChangeIntConfig.h` file that control how many interrupt vectors are enabled:
 {{{
 //#define       NO_PORTB_PINCHANGES
