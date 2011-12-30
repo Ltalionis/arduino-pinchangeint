@@ -5,6 +5,7 @@
 
 How to use the PinChangeInt library in your own programs.  Here I assume you have properly installed the library.  See the Installation wiki page for more information.
 
+In general, I am writing this for version 1.3 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
 =Overview=
 ==The Quick and Dirty Method==
 In your sketch, include:
