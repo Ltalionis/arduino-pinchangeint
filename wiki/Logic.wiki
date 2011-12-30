@@ -26,6 +26,22 @@ The Arduino's pins are shown below, in parentheses.  The corresponding pin numbe
       (D 8) PB0 14|    |15  PB1 (D 9) PWM
                   +----+
 }}}
-The ATmega 328p's pins' state can be sampled by simply reading a pin state register, which is a single 8-bit number.   The ATmega 328p's pins are grouped in sets of “Port”s, shown as “PDx”, “PBx”, “PCx” above, where x represents an integer from 0 to 8.  So you can see that Port B, pin 0 is pin 14 on the chip, or D8 on the Arduino board.
+
+Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168, reproduced above.
+
+The ATmega328 and its kind (ATmega168, ATmega2560) all use PORTs for their input and outputs.  A PORT is essentially a group of pins on the ATmega processor.  They are interesting because the pins grouped in each PORT share some things in common.  For example, you can read all the pins in a PORT in one command.
+
+How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link or shown above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are more PORTs on the ATmega2560 used in the Arduino Mega, but only those 3 PORTs allow for Pin Change interrupts on those bigger chips, too.
+
+This is a summary of the Arduino-to-port mappings that are available to you:
+{{{
+ Arduino Pins         PORT
+ ------------         ----
+ Digital 0-7          D
+ Digital 8-13         B
+ Analog  0-5          C
+}}}
+
+Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.
 
 _to be continued_
