@@ -68,6 +68,9 @@ Stops interrupting on the given pin.
 static uint8_t arduinoPin
 }}}
 This variable is assigned the value of the latest pin that caused an interrupt.  This pin will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
+===Limit on the Number of Pins===
+===Memory Utilization===
+
 
 ===More Information===
 See the *Logic* wiki page in this project for more detailed information about the operation of this library.
