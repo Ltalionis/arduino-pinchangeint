@@ -49,10 +49,20 @@ Why is this important?  It may not be, for you.  This came up when I was program
 In order to enable an Interrupt on any of the Arduino pins using the Pin Change Interrupts, you need to do the following:
   # Enable interrupts on the pin's Port by setting the proper bit in the PCICR register.
   # Enable each pin for interrupts that you care to, by setting the appropriate PCMSK0, PCMSK1, or PCMSK2 register with the bit position of the corresponding pin.  PCMSK0 corresponds to PORT B, PCMSK1 corresponds to PORT C, and PCMSK2 corresponds to PORT D.
-*Assuming* that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any enabled input pin on that port.  Each PORT has an single interrupt vector corresponding to it.  This means that if pin 8 and pin 9 both are enabled for interrupts, then the ATmega328p calls the interrupt pointed to by the PCINT1_vect vector.  Pins 8 and 9 are on PORT B.
+*Assuming* that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any enabled input pin on that port.  Each PORT has an single interrupt vector corresponding to it.  This means that if pin 8 and pin 9 both are enabled for interrupts, then the ATmega328p calls the interrupt routine pointed to by the PCINT0_vect vector because pins 8 and 9 are on PORT B.
 
 Note that enabling interrupts globally is as simple as setting the Global Interrupt Enable flag, which is bit 7 of the Status Register (SREG).  This bit is enabled by default.  Also interesting is that the flag is cleared by hardware as soon as an interrupt takes place, and it's set by the Return from Interrupt instruction when the Interrupt routine returns.  It is possible for an interrupt to set this flag, thereby enabling nested interrupts.  This is not done by the PinChangeInt library- that is, nested interrupts are not enabled under the covers.
 
+===Priority===
+{{{
+Vector No.	Program Address	Source	Interrupt Definition
+1		0x000		RESET	External Pin, Power-on Reset, Brown-out Reset and Watchdog System Reset
+2		0x001		INT0	External Interrupt Request 0
+3		0x002		INT1	External Interrupt Request 1
+4		0x003		PCINT0	Pin Change Interrupt Request 0
+5		0x004		PCINT1 	Pin Change Interrupt Request 1
+6		0x005		PCINT2	Pin Change Interrupt Request 2
+}}}
 ==PinChangeInt Details==
 
 _to be continued_
