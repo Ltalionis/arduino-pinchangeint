@@ -27,3 +27,5 @@ The Arduino's pins are shown below, in parentheses.  The corresponding pin numbe
                   +----+
 }}}
 The ATmega 328p's pins' state can be sampled by simply reading a pin state register, which is a single 8-bit number.   The ATmega 328p's pins are grouped in sets of “Port”s, shown as “PDx”, “PBx”, “PCx” above, where x represents an integer from 0 to 8.  So you can see that Port B, pin 0 is pin 14 on the chip, or D8 on the Arduino board.
+
+_to be continued_
