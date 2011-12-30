@@ -22,7 +22,7 @@ By having a built-in pull-up resistor you reduce parts count on your project.  S
 == Connecting ==
 Here's a rough schematic, in ASCII:
 {{{
-  +---+ pole -- pole + --> Arduino pinB
+  +---+ pole -- pole + --> Arduino Pin
  gnd
 }}}
 
@@ -33,7 +33,13 @@ If for some reason you must connect your switch to Vcc, then you will have to ha
  gnd                  |
                         +---+pole -- pole +-----+resistor+-------> Vcc
 }}}
-Will not work.  You should connect your LED to Vcc, and have a 150 to 390 ohm pull-up/current-limiting resistor in series with it, connected to the Arduino pin (assuming 5V Vcc).  Then connect your switch to ground and to the Arduino pin.  You turn on the Arduino pin's pull-up resistor as usual, 
+Will not work.  You should connect your LED to Vcc, and have a 150 to 390 ohm pull-up/current-limiting resistor in series with it, connected to the Arduino pin (assuming 5V Vcc).  Then connect your switch to ground and to the Arduino pin.  You turn on the Arduino pin's pull-up resistor as usual.  Here is how you would connect it: 
+{{{
+  +---+ pole -- pole + --> Arduino Pin
+  |                               |
+  |                              +---+resistor+-----+ -LED+ +------->Vcc
+ gnd
+}}}
 
 _to be continued_
 
