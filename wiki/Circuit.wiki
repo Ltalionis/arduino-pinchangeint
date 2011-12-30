@@ -2,12 +2,53 @@
 
 = Introduction =
 
-Add your content here.
-
+This library responds to pin change interrupts.  That is, pins you use will be set as inputs.  The ATmega processors in the Arduino come with resistors built in for you, that when turned on are connected to Vcc.  Thus, it is easiest to connect one pole of your switch to ground and the other to your Arduino pin.
 
 = Details =
+== Configure pin ==
+This is generally how you will configure your digital pin on the Arduino, software-wise.  Pin 5 is shown as an example:
+{{{
+  pinMode(5, INPUT);
+  digitalWrite(5, HIGH);
+}}}
+(remember that your Analog Input pins can also be Digital Input or Output pins).
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+The first statement turns your pin into a digital input pin.
+
+The second statement turns on the Built-in resistor.  The resistor "pulls up" the voltage on the input pin.  This is because one end is connected to Vcc, and the other to the pin.  Under no load, then, the voltage on the input pin will read at Vcc; it has been pulled up to Vcc and hence this type of resistor is called a pull-up resistor.  The value of the ATmega328p's pull-up resistors are between 20-50k ohms.
+
+By having a built-in pull-up resistor you reduce parts count on your project.  So it is easiest to connect a switch between ground and the pin.  
+
+== Connecting ==
+Here's a rough schematic, in ASCII:
+{{{
+  +---+ pole -- pole + --> Arduino pinB
+ gnd
+}}}
+
+== Switch Connected to Vcc ==
+If for some reason you must connect your switch to Vcc, then you will have to have a pull-down resistor.  Wiring such as this:
+{{{
+  +---+ -LED+ +----------> Arduino pin
+ gnd                  |
+                        +---+pole -- pole +-----+resistor+-------> Vcc
+}}}
+Will not work.  You should connect your LED to Vcc, and have a 150 to 390 ohm pull-up/current-limiting resistor in series with it, connected to the Arduino pin (assuming 5V Vcc).  Then connect your switch to ground and to the Arduino pin.  You turn on the Arduino pin's pull-up resistor as usual, 
+
+== Caveats ==
+Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168.
+
+The ATmega328 and its kind (ATmega168, ATmega2560) all use PORTs for their input and outputs.  A PORT is essentially a group of pins on the ATmega processor.  They are interesting because the pins grouped in each PORT share some things in common.  For example, you can read all the pins in a PORT in one command.  What this means for you as a designer is that you should NOT use two different PORTs for the two pins of your rotary encoder.
+
+How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link, above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are more PORTs on the ATmega2560 used in the Arduino Mega, but only those 3 PORTs allow for Pin Change interrupts on those bigger chips, too.
+
+So, when you connect your rotary encoder to your Arduino, make sure that its two pins- which I call PinA and PinB- both attach to the same PORT.  This is a summary of the Arduino-to-port mappings that are available to you:
+{{{
+ Arduino Pins         PORT
+ ------------         ----
+ Digital 0-7          D
+ Digital 8-13         B
+ Analog  0-5          C
+}}}
+
+In summary, what you need to do... the ONLY thing you really need to do... is ensure that both pins of your encoder are attached to pins within those ranges, above.  Don't cross ranges and connect, for example, digital pin 7 to digital pin 10.  It won't work, and the addEncoder method will not configure your ports.
