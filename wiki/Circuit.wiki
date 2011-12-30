@@ -35,6 +35,9 @@ If for some reason you must connect your switch to Vcc, then you will have to ha
 }}}
 Will not work.  You should connect your LED to Vcc, and have a 150 to 390 ohm pull-up/current-limiting resistor in series with it, connected to the Arduino pin (assuming 5V Vcc).  Then connect your switch to ground and to the Arduino pin.  You turn on the Arduino pin's pull-up resistor as usual, 
 
+_to be continued_
+
+*IGNORE ALL THIS*
 == Caveats ==
 Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168.
 
