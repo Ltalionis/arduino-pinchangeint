@@ -90,7 +90,13 @@ ISR(PCINT0_vect) {
 }
 #endif
 }}}
-
+So if you know, for example, that you have only pins on PORTB, you can uncomment the lines as follows:
+{{{
+//#define       NO_PORTB_PINCHANGES
+#define       NO_PORTC_PINCHANGES
+#define       NO_PORTD_PINCHANGES
+}}}
+This will not set up the corresponding interrupt vectors and it will inline the single remaining interrupt routine.  I have not measured the effect on interrupt routine speed.
 
 
 ===More Information===
