@@ -99,7 +99,9 @@ So if you know, for example, that you have only pins on PORTB, you can uncomment
 }}}
 This will not set up the corresponding interrupt vectors and it will inline the single remaining interrupt routine.  I have not measured the effect on interrupt routine speed.
 
-===`PinChangeIntConfig.h`:DISABLE_PCINT_MULTI_SERVICE Service Multiple Interrupts===
+===`PinChangeIntConfig.h`:DISABLE_PCINT_MULTI_SERVICE===
+For servicing multiple interrupts.
+
 Normally, the PinChangeInt interrupt routine will attempt to handle all changed pins on a port.  This can alleviate the overhead to enter and exit the interrupt routine.  However, if you don't want this- for example, with rapid interrupts your CPU may never exit the interrupt routine- then you can uncomment the `DISABLE_PCINT_MULTI_SERVICE` line in the `PinChangeIntConfig.h` file:
 {{{
 #define       DISABLE_PCINT_MULTI_SERVICE
