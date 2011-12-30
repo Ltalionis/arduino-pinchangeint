@@ -43,6 +43,6 @@ This is a summary of the Arduino-to-port mappings that are available to you:
  Analog  0-5          C
 }}}
 
-Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the pin state register.
+Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the PORT state register.
 
 _to be continued_
