@@ -49,25 +49,3 @@ The resistor will be 150-390 ohms.  Here, you would not turn on the Arduino's in
 The problem is, the forward voltage of the LED may be 2-4 volts.  Thus, the voltage at the Arduino pin will go from 0 (switch off) to 1-3 volts.  It is very well possible that the voltage will not be high enough to be recognized by the Arduino.  The ATmega328p spec sheet says that the minimum high voltage on a pin is (0.6 `*` Vcc), which at 5 volts would be 3 volts.  So you would need an LED with a low forward voltage drop. 
 
 In short, it's easier to use a switch to pull the Arduino pin down to 0, than to pull it up to Vcc.
-
-
-_to be continued_
-
-*IGNORE ALL THIS*
-== Caveats ==
-Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168.
-
-The ATmega328 and its kind (ATmega168, ATmega2560) all use PORTs for their input and outputs.  A PORT is essentially a group of pins on the ATmega processor.  They are interesting because the pins grouped in each PORT share some things in common.  For example, you can read all the pins in a PORT in one command.  What this means for you as a designer is that you should NOT use two different PORTs for the two pins of your rotary encoder.
-
-How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link, above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are more PORTs on the ATmega2560 used in the Arduino Mega, but only those 3 PORTs allow for Pin Change interrupts on those bigger chips, too.
-
-So, when you connect your rotary encoder to your Arduino, make sure that its two pins- which I call PinA and PinB- both attach to the same PORT.  This is a summary of the Arduino-to-port mappings that are available to you:
-{{{
- Arduino Pins         PORT
- ------------         ----
- Digital 0-7          D
- Digital 8-13         B
- Analog  0-5          C
-}}}
-
-In summary, what you need to do... the ONLY thing you really need to do... is ensure that both pins of your encoder are attached to pins within those ranges, above.  Don't cross ranges and connect, for example, digital pin 7 to digital pin 10.  It won't work, and the addEncoder method will not configure your ports.
