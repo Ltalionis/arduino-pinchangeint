@@ -20,7 +20,7 @@ The second statement turns on the Built-in resistor.  The resistor "pulls up" th
 By having a built-in pull-up resistor you reduce parts count on your project.  So it is easiest to connect a switch between ground and the pin.  
 
 == Connecting ==
-Here's a rough schematic, in ASCII:
+Here's a rough schematic, in ASCII (the "pole"s are the two connections on the switch:
 {{{
   +---+ pole -- pole + --> Arduino Pin
  gnd
