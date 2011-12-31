@@ -1,0 +1,15 @@
+#summary Installing the zip file (version 1.3 or above)
+#labels Featured,Phase-Deploy
+
+= Introduction =
+
+Add your content here.
+
+
+= Details =
+
+Go to your Arduino's libraries folder.
+
+Extract the zip file there.
+
+_to be continued_
