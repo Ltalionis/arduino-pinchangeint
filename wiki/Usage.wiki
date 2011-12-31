@@ -109,6 +109,64 @@ Normally, the PinChangeInt interrupt routine will attempt to handle all changed 
 
 ===More Information===
 See the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] wiki page in this project for more detailed information about the operation of this library.
+=Sofware Interrupts=
+It is possible to interrupt an Arduino pin from your own sketch.  This would cause an interrupt just like connecting an external switch to your Arduino, but you can do it right from your own sketch.  I use this to test the speed of the interrupt code, by having the interrupt triggered by a change on the port from the sketch.
+
+Note that the Arduino's `digitalWrite()` library function carries a lot of overhead.  You may want to modify a port by writing directly to a register.  Here's how to create a software interrupt by writing to a register.  Also, see the `PinChangeIntSpeedTest.pde` sketch that comes in the Examples folder of version 1.3 or higher.
+
+{{{
+#include PinChangeInt.h
+uint8_t qf0;
+void quicfunc() {
+  qf0=TCNT0;
+}
+
+#define PTEST 2
+volatile uint8_t *pinT_OPort;
+uint8_t pinT_Mask, not_pinT_Mask;
+volatile uint8_t pintest, pinIntLow, pinIntHigh;
+void setup()
+{
+  Serial.begin(115200); Serial.println("---------------------------------------");
+  pinMode(PTEST, OUTPUT); digitalWrite(2, HIGH);
+  // *****************************************************************************
+  // set up ports for output ************ 
+  // *****************************************************************************
+  pinT_OPort=portOutputRegister(digitalPinToPort(PTEST)); // output port
+  pinT_Mask=digitalPinToBitMask(PTEST);                   // mask
+  not_pinT_Mask=pinT_Mask^0xFF;                       	  // not-mask
+  PCintPort::attachInterrupt(PTEST, &quicfunc, CHANGE);   // C technique; v1.3 or earlier
+} // end setup()
+
+uint8_t k=0;
+unsigned long milliStart, milliEnd, elapsed;
+void loop() {
+  k=0;
+  *pinT_OPort|=pinT_Mask;        // PTEST to 1
+  Serial.print("TEST: "); Serial.print(TEST, DEC); Serial.print(" ");
+  Serial.print("test pin mask: "); Serial.print(pinT_Mask, HEX);
+  Serial.print(" interrupted pin: ");
+  Serial.print(PTEST, DEC);
+  delay(2000);
+  Serial.println(" Start...");
+  milliStart=millis();
+  while (k < 10) {
+    i=0;
+    while (i < 10000) {
+      *pinT_OPort&=not_pinT_Mask;    // pintest to 0 ****************************** 16.8 us
+      *pinT_OPort|=pinT_Mask;        // pintest to 1 ****************************** ...to get here
+      i++;
+    }
+    k++;
+  }
+  milliEnd=millis();
+  elapsed=milliEnd-milliStart;
+  Serial.print("Elapsed: "); 
+  Serial.println(elapsed, DEC);
+  delay(500);
+}
+}}}
+
 =Examples=
 Here is an example with a pushbutton connected to pin2 and another to pin3.  One side of the pushbutton is connected to ground.  The other side connects to the Arduino pin.
 {{{
