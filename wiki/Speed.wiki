@@ -8,3 +8,7 @@ I have conducted extensive speed tests of this library, since its functionality 
 = Details =
 
 I have created a report using LibreOffice.  I also present a PDF version.
+
+http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test.odt
+
+http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test.pdf
