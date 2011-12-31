@@ -110,9 +110,11 @@ Normally, the PinChangeInt interrupt routine will attempt to handle all changed 
 ===More Information===
 See the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] wiki page in this project for more detailed information about the operation of this library.
 =Sofware Interrupts=
-It is possible to interrupt an Arduino pin from your own sketch.  This would cause an interrupt just like connecting an external switch to your Arduino, but you can do it right from your own sketch.  I use this to test the speed of the interrupt code, by having the interrupt triggered by a change on the port from the sketch.
+It is possible to interrupt an Arduino pin from your own sketch.  This would cause an interrupt just like connecting an external switch to your Arduino, but you can do it right from your own sketch.  I use this to test the speed of the interrupt code, by having the interrupt triggered by a change on the port from the sketch.  You may come up with another use for such a thing.
 
-Note that the Arduino's `digitalWrite()` library function carries a lot of overhead.  You may want to modify a port by writing directly to a register.  Here's how to create a software interrupt by writing to a register.  Also, see the `PinChangeIntSpeedTest.pde` sketch that comes in the Examples folder of version 1.3 or higher.
+Remember that you must provision the pin as an *output* pin, so you should not have any switches connected to it.  You can connect an LED or transistor or gate or what have you to the pin.
+
+Note that the Arduino's `digitalWrite()` library function carries a lot of overhead.  You may want to modify a port by writing directly to a register.  Here's a quick example of creating a software interrupt by writing to a register.  Also, see the `PinChangeIntSpeedTest.pde` sketch that comes in the Examples folder of version 1.3 or higher.  This example was distilled from that sketch.  This example was not tested and is presented here as a guide only.  It should be close.  Tomorrow is my daughter's birthday so I'll test it eventually but for now it's family first :-).
 
 {{{
 #include PinChangeInt.h
