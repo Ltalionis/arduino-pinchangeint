@@ -108,7 +108,7 @@ Normally, the PinChangeInt interrupt routine will attempt to handle all changed 
 }}}
 
 ===More Information===
-See the *Logic* wiki page in this project for more detailed information about the operation of this library.
+See the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] wiki page in this project for more detailed information about the operation of this library.
 =Examples=
 Here is an example with a pushbutton connected to pin2 and another to pin3.  One side of the pushbutton is connected to ground.  The other side connects to the Arduino pin.
 {{{
