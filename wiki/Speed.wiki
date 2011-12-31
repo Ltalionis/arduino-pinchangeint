@@ -12,3 +12,5 @@ I have created a report using LibreOffice.  I also present a PDF version.
 http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test.odt
 
 http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test.pdf
+
+Note that in the document I discuss an upcoming release, ooPinChangeInt-1.0.  It is not available as of yet (12/31/11).  As they say, "Coming soon!"
