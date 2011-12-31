@@ -1,0 +1,10 @@
+#summary Speed tests of the PinChangeInt library
+
+= Introduction =
+
+I have conducted extensive speed tests of this library, since its functionality is so fundamental to Interrupts.  See the PDF or ODT file.
+
+
+= Details =
+
+I have created a report using LibreOffice.  I also present a PDF version.
