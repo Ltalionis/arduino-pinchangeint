@@ -5,7 +5,7 @@
 
 How to use the PinChangeInt library in your own programs.  Here I assume you have properly installed the library.  See the Installation wiki page for more information.
 
-In general, I am writing this for version 1.3 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
+In general, I am writing this for version 1.4 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
 =Overview=
 ==The Quick and Dirty Method==
 In your sketch, include:
@@ -51,6 +51,23 @@ loop() {
     }
   }
 }
+}}}
+New, as of version 1.4, is the ability to apply some optimization switches right in your sketch.  Read over these #defines and decide if any apply to you.  You can add them to your code *ahead* of the `#include PinChangeInt.h`.
+{{{
+// You can reduce the memory footprint of this handler by declaring that there will be no pin change interrupts
+// on any one or two of the three ports.  If only a single port remains, the handler will be declared inline
+// reducing the size and latency of the handler.
+// #define NO_PORTB_PINCHANGES // to indicate that port b will not be used for pin change interrupts
+// #define NO_PORTC_PINCHANGES // to indicate that port c will not be used for pin change interrupts
+// #define NO_PORTD_PINCHANGES // to indicate that port d will not be used for pin change interrupts
+// if there is only one PCInt vector in use the code can be inlined
+// reducing latency and code size
+// define DISABLE_PCINT_MULTI_SERVICE below to limit the handler to servicing a single interrupt per invocation.
+// #define       DISABLE_PCINT_MULTI_SERVICE
+}}}
+How to decide if that applies to you?  Read over the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] page, the *ATmega328p Pins and Ports* section.  Now review your desired pin connections, and correlate your pins with the ATmega328p ports.   If you are not using a particular port, `#define NO_PORTx_PINCHANGES` for that port "x".  For example,
+{{{
+#define NO_PORTC_PINCHANGES
 }}}
 ==Reference==
 ===Public Methods===
