@@ -28,6 +28,8 @@ PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
 In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
 {{{
 setup() {
+  pinMode(2, INPUT); digitalWrite(2, HIGH)
+  PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
   Serial.begin(115200);
   Serial.println("---------------------------------------");
 }
