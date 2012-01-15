@@ -13,13 +13,11 @@ On Linux or MacOS, cd to there.  On Windows, your unzip tool may have a location
 
 Extract the zip file there.  On Linux or MacOS:
 {{{
-unzip /path/to/pinchangeint-v1.3.zip
+unzip /path/to/pinchangeint-v1.4.zip
 }}}
 This will install the following files and directories:
 {{{
 PinChangeInt/PinChangeInt.h
-PinChangeInt/PinChangeInt.cpp
-PinChangeInt/PinChangeIntConfig.h
 PinChangeInt/keywords.txt
 PinChangeInt/Examples/PinChangeIntExample.pde
 PinChangeInt/Examples/PinChangeIntSpeedTest.pde
@@ -30,3 +28,10 @@ MemoryFree/MemoryFree.h
 The cppfix directory is necessary only for Arduino versions prior to 1.0.  If you are using Arduino-1.0 or above, you can remove it.
 
 The MemoryFree library is included for running speed and size tests.  If you don't want it, you can remove it.
+
+Files
+{{{
+PinChangeInt/PinChangeInt.cpp
+PinChangeInt/PinChangeIntConfig.h
+}}}
+are deprecated starting in Version 1.4 and will no longer be installed.
