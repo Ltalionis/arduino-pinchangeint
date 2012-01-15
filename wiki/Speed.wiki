@@ -2,15 +2,13 @@
 
 = Introduction =
 
-I have conducted extensive speed tests of this library, since its functionality is so fundamental to Interrupts.  See the PDF or ODT file.
+I have conducted extensive speed tests of this library, since its functionality is so fundamental to Interrupts.  See the PDF file.  An ODT file (OpenDocument format) file is available by request.
 
 
 = Details =
 
 I have created a report using LibreOffice.  I also present a PDF version.
 
-http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test.odt
+http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test-1.4.pdf
 
-http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test.pdf
-
-Note that in the document I discuss an upcoming release, ooPinChangeInt-1.0.  It is not available as of yet (12/31/11).  As they say, "Coming soon!"
+Note that in the document I discuss an upcoming release, ooPinChangeInt-1.0.  It is not available as of yet (15 Jan. 12).  As they say, "Coming soon!"
