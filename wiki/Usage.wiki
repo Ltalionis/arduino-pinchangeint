@@ -71,6 +71,11 @@ How to decide if that applies to you?  Read over the [http://code.google.com/p/a
 {{{
 #define NO_PORTC_PINCHANGES
 }}}
+===Other Arduinos===
+This library has been developed and is supported on the Arduino Uno/Duemilanove only.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano, to name just one, will need some translation in order to get this library to work with it.  For example, pin 9 on the Nano is D6 on the Arduino Uno.  So when using this library on the Nano, you would need to attach to pin 6.
+
+This library will likely not work with the Arduino Mega.  It appears that the only port that shares PinChangeInterrupts between the ATmega328 and ATmega2560 is Port B.
+
 ==Reference==
 ===Public Methods===
 {{{
