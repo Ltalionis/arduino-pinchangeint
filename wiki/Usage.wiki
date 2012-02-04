@@ -136,7 +136,7 @@ So if you know, for example, that you have only pins on PORTB, you can uncomment
 }}}
 This will not set up the corresponding interrupt vectors and it will inline the single remaining interrupt routine.  I have measured the effect on interrupt routine speed; see the [http://code.google.com/p/arduino-pinchangeint/wiki/Speed Speed wiki page here].
 
-===Optimization:NO_ARDUINO_PIN===
+===Optimization:NO_PIN_ARDUINO===
 Upon interrupt, the `PCintPort::PCint()` function is called for that Port.  Within that function, we call the user function that has been assigned by you the programmer.  Here is the section of code (abbreviated for clarity):
 {{{
       PCintPort::pinState=curr & changedPins ? HIGH : LOW; // version 1.5
