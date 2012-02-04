@@ -7,7 +7,7 @@ How to use the PinChangeInt library in your own programs.  Here I assume you hav
 
 In general, I am writing this for version 1.4 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
 
-This library has been developed and is supported on the Arduino Uno/Duemilanove only.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano, has been confirmed to work with this library.
+This library has been developed and is supported on the Arduino Uno/Duemilanove only.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work.
 
 This library will likely not work with the Arduino Mega.  It appears that the only port that shares PinChangeInterrupts between the ATmega328 and ATmega2560 is Port B.
 =Overview=
@@ -66,6 +66,13 @@ New, as of version 1.4, is the ability to apply some optimization switches right
 // #define NO_PORTB_PINCHANGES // to indicate that port b will not be used for pin change interrupts
 // #define NO_PORTC_PINCHANGES // to indicate that port c will not be used for pin change interrupts
 // #define NO_PORTD_PINCHANGES // to indicate that port d will not be used for pin change interrupts
+// *** New in version 1.5: **********************************
+// You can reduce the code size by 20-50 bytes, and you can speed up the interrupt routine
+// slightly by declaring that you don't care if the static variables PCintPort::pinState and/or
+// PCintPort::arduinoPin are set and made available to your interrupt routine.
+// #define NO_PIN_STATE        // to indicate that you don't need the pinState
+// #define NO_PIN_NUMBER       // to indicate that you don't need the arduinoPin
+// *********************************************************
 // if there is only one PCInt vector in use the code can be inlined
 // reducing latency and code size
 // define DISABLE_PCINT_MULTI_SERVICE below to limit the handler to servicing a single interrupt per invocation.
