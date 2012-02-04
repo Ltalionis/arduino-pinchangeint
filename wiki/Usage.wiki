@@ -2,8 +2,9 @@
 #labels Featured,Phase-Implementation
 
 =Introduction=
+_Updates for v1.5: added a pinState variable.  Added optimizations to eliminate code for pinState and arduinoPin from being compiled._
 
-How to use the PinChangeInt library in your own programs.  Here I assume you have properly installed the library.  See the Installation wiki page for more information.
+Here's how to use the PinChangeInt library in your own programs. I assume you have properly installed the library.  See the Installation wiki page for more information.
 
 In general, I am writing this for version 1.4 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
 
@@ -66,7 +67,7 @@ New, as of version 1.4, is the ability to apply some optimization switches right
 // #define NO_PORTB_PINCHANGES // to indicate that port b will not be used for pin change interrupts
 // #define NO_PORTC_PINCHANGES // to indicate that port c will not be used for pin change interrupts
 // #define NO_PORTD_PINCHANGES // to indicate that port d will not be used for pin change interrupts
-// *** New in version 1.5: **********************************
+// *** New in version 1.5: ********************************
 // You can reduce the code size by 20-50 bytes, and you can speed up the interrupt routine
 // slightly by declaring that you don't care if the static variables PCintPort::pinState and/or
 // PCintPort::arduinoPin are set and made available to your interrupt routine.
@@ -137,6 +138,8 @@ So if you know, for example, that you have only pins on PORTB, you can uncomment
 This will not set up the corresponding interrupt vectors and it will inline the single remaining interrupt routine.  I have measured the effect on interrupt routine speed; see the [http://code.google.com/p/arduino-pinchangeint/wiki/Speed Speed wiki page here].
 
 ===Optimization:NO_PIN_ARDUINO===
+New in version 1.5
+
 Upon interrupt, the `PCintPort::PCint()` function is called for that Port.  Within that function, we call the user function that has been assigned by you the programmer.  Here is the section of code (abbreviated for clarity):
 {{{
       PCintPort::pinState=curr & changedPins ? HIGH : LOW; // version 1.5
@@ -145,6 +148,8 @@ Upon interrupt, the `PCintPort::PCint()` function is called for that Port.  With
 }}}
 Since `PCintPort::arduinoPin` is a static variable, it is available for your function to query.  If you find you don't need it, having it in the code adds bloat and a bit of slowness.  `#define`ing this macro eliminates the `PCintPort::arduinoPin=p->arduinoPin;` from your code entirely.
 ===Optimization:NO_PIN_STATE===
+New in version 1.5
+
 Likewise, if you find you don't care to know what the state of the pin was at the time of the interrupt, `#define`ing this macro eliminates the setting of `PCintPort::pinState` from your code entirely.
 
 ===Optimization:DISABLE_PCINT_MULTI_SERVICE===
