@@ -93,6 +93,7 @@ Attaches an interrupt to the given pin.  The interrupt will call the function `u
   * `pin` - The pin on the Arduino that you want to attach an interrupt to.
   * `userFunc` - A user-defined function that the interrupt routine will call.
   * `mode` - The interrupt will trigger based on `mode`, which can be one of *RISING*, *FALLING*, or *CHANGE*
+Pin Change Interrupts in truth trigger on CHANGE.  Whether it was RISING or FALLING is determined by the Interrupt handler- that is, in software.  This has some consequences to the interrupt code:  You may choose to trigger on FALLING, and the interrupt will take place when the level transitions to LOW, but for a fast-changing signal, since the state of the pin is checked inside the handler- at a couple of microseconds after the interrupt- it is possible to read a HIGH level on it.  In such a case, your interrupt handler will not run. See the pinState variable below for more discussion.
 {{{
 void detachInterrupt(uint8_t pin)
 }}}
