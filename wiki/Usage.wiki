@@ -113,6 +113,11 @@ How much time?  There are at least 11 push instructions that the compiler genera
 
 The External Interrupts, by contrast, can be set to trigger on low level, on change to either level (HIGH or LOW), by change to HIGH, or by change to LOW- and these triggers are set by the hardware.  So if you set an External Interrupt to trigger on a transition to LOW, then you know immediately afterward that the current logic level of the pin is LOW.  External Interrupts are not used by this library- you can use the Arduino's attachInterrupt function for those.
 
+{{{
+static uint8_t pinmode
+}}}
+*Only available if you `#define PINMODE` in your sketch.*  This variable will be set to the mode of the interrupting pin; ie, one of CHANGE, RISING, or FALLING.  This was created for testing purposes (after all, it is you who set the mode of the pin), but since it's available I wil document it.
+
 ===PinChangeInt Optimizations ===
 There are a small number of parameters that the programmer can modify to limit the amount of memory the library uses.  *For PinChangeInt versions prior to 1.4*, these parameters _*must*_ be set in the `PinChangeIntConfig.h` file.  They will have no effect if set anywhere else, including your sketch.  Trust me on this one:  You must go to the libraries directory, and edit this config file itself for it to be of use.
 
