@@ -108,6 +108,7 @@ Stops interrupting on the given pin.
 static uint8_t arduinoPin
 }}}
 This variable is assigned the value of the latest pin that caused an interrupt.  This pin will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
+----
 {{{
 static uint8_t pinState
 }}}
@@ -123,7 +124,7 @@ _Note: The External Interrupts, by contrast, can be set to trigger on low level,
 static uint8_t pinmode
 }}}
 *Only available if you `#define PINMODE` in your sketch.*  This variable will be set to the mode of the interrupting pin; ie, one of CHANGE, RISING, or FALLING.  This was created for testing purposes (after all, it is you who set the mode of the pin), but since it's available I will document it.
-
+----
 ===PinChangeInt Optimizations ===
 There are a small number of parameters that the programmer can modify to limit the amount of memory the library uses.  *For PinChangeInt versions prior to 1.4*, these parameters _*must*_ be set in the `PinChangeIntConfig.h` file.  They will have no effect if set anywhere else, including your sketch.  Trust me on this one:  You must go to the libraries directory, and edit this config file itself for it to be of use.
 
