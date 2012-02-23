@@ -41,6 +41,7 @@ setup() {
 
 uint8_t i;
 loop() {
+
   for (i=0; i < 20; i++) {
     if (interrupt_count[i] != 0) {
       count=interrupt_count[i];
@@ -97,12 +98,12 @@ Attaches an interrupt to the given pin.  The interrupt will call the function `u
   * `userFunc` - A user-defined function that the interrupt routine will call.
   * `mode` - The interrupt will trigger based on `mode`, which can be one of *RISING*, *FALLING*, or *CHANGE*
 Pin Change Interrupts in truth trigger on CHANGE.  Whether it was RISING or FALLING is determined by the Interrupt handler- that is, in software.  This has some consequences to the interrupt code:  You may choose to trigger on FALLING, and the interrupt will take place when the level transitions to LOW, but for a fast-changing signal it is possible to read a HIGH level on the pin.  This is because the state of the pin is checked inside the handler- at a couple of microseconds after the interrupt.  In such a case, your interrupt handler may not run. See the pinState variable below for more discussion.
----
+----
 {{{
 void detachInterrupt(uint8_t pin)
 }}}
 Stops interrupting on the given pin.
----
+----
 {{{
 static uint8_t arduinoPin
 }}}
