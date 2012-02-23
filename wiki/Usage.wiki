@@ -84,6 +84,8 @@ How to decide if that applies to you?  Read over the [http://code.google.com/p/a
 #define NO_PORTC_PINCHANGES
 }}}
 
+Next, *ENJOY!* your Arduino and its Pin Change interrupts.
+
 ==Reference==
 ===Public Methods and Variables===
 {{{
