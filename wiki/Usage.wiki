@@ -182,6 +182,19 @@ Normally, the PinChangeInt interrupt routine will attempt to handle all changed 
 
 ===More Information===
 See the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] wiki page in this project for more detailed information about the operation of this library.
+
+=Use from Another Library=
+_New as of version 1.70beta_
+
+If you want to use this library from another library, you must define the `LIBCALL_PINCHANGEINT` macro in the .h header file for your library, like this:
+{{{
+        #ifndef PinChangeInt_h
+        #define LIBCALL_PINCHANGEINT
+        #include "../PinChangeInt/PinChangeInt.h"
+        #endif
+}}}
+Thus you will be able to include PinChangeInt.h from your sketch and from your library.
+
 =Sofware Interrupts=
 It is possible to interrupt an Arduino pin from your own sketch.  This would cause an interrupt just like connecting an external switch to your Arduino, but you can do it right from your own sketch.  I use this to test the speed of the interrupt code, by having the interrupt triggered by a change on the port from the sketch.  You may come up with another use for such a thing.
 
