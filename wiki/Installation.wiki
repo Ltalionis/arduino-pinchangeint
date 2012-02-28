@@ -25,10 +25,10 @@ The following files and directories are included in the archive:
 {{{
 PinChangeInt/PinChangeInt.h 
 PinChangeInt/keywords.txt   
-PinChangeInt/Examples/ByteBuffer/ByteBuffer.cpp _(version 1.70beta and above)_
-PinChangeInt/Examples/ByteBuffer/ByteBuffer.h _(version 1.70beta and above)_
+PinChangeInt/Examples/ByteBuffer/ByteBuffer.cpp                     (version 1.70beta and above)
+PinChangeInt/Examples/ByteBuffer/ByteBuffer.h                       (version 1.70beta and above)
 PinChangeInt/Examples/PinChangeIntSpeedTest/PinChangeIntSpeedTest.pde
-PinChangeInt/Examples/PinChangeIntTest/PinChangeIntTest.pde _(version 1.70beta and above)_
+PinChangeInt/Examples/PinChangeIntTest/PinChangeIntTest.pde         (version 1.70beta and above)
 cppfix/cppfix.h
 MemoryFree/MemoryFree.cpp   
 MemoryFree/MemoryFree.h
