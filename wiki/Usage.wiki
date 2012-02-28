@@ -195,7 +195,7 @@ If you want to use this library from another library, you must define the `LIBCA
 }}}
 Thus you will be able to include PinChangeInt.h from your sketch and from your library.
 
-=Sofware Interrupts=
+=Software Interrupts=
 It is possible to interrupt an Arduino pin from your own sketch.  This would cause an interrupt just like connecting an external switch to your Arduino, but you can do it right from your own sketch.  I use this to test the speed of the interrupt code, by having the interrupt triggered by a change on the port from the sketch.  You may come up with another use for such a thing.
 
 Remember that you must provision the pin as an *output* pin, so you should not have any switches connected to it.  You can connect an LED or transistor or gate or what have you to the pin.
