@@ -191,7 +191,7 @@ See the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] wiki pa
 
 =Miscellaneous=
 ==Serial.print() Inside an ISR==
-As of Arduino 1.0 this will break.  In previous version of Arduino you could get away with it- and you may find me using it in some of my code.  But as of version 1.70beta of the library, I have discontinued doing this.  The Serial library uses an interrupt to work, and this interacts with the interrupts of the PinChangeInt library.  Essentially it will lock up your Arduino, within a short period of time.
+In my tests I have been using the PinChangeInt with rotary encoders and pushbutton switches, and printing status information via the serial line.  As of Arduino 1.0 this will break.  In previous version of Arduino you could get away with it- and you may find me still distributing it in some of my code.  But as of version 1.70beta of the library, I have discontinued developing or maintaining code with this technique.  The Serial library uses an interrupt in order to work and this interacts with the pin change interrupts.  Essentially it will lock up your Arduino, often within a short period of time.
 
 Instead, I have utilized a circular buffer from Sigurður Örn (http://siggiorn.com/?p=460) that I ship with each release (I received permission from Siggi).  Now, as you can see in PinChangeIntTest.pde (delivered starting with version 1.70beta), I populate the buffer and then print it from the main loop.  This can make for some pretty obnoxious-looking output but at least it won't lock up the CPU.
 
