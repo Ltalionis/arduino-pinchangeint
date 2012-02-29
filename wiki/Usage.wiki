@@ -11,6 +11,9 @@ In general, I am writing this for version 1.4 and above of the PinChangeInt libr
 This library has been developed and is supported on the Arduino Uno/Duemilanove only.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work.
 
 This library will likely not work with the Arduino Mega.  It appears that the only port that shares PinChangeInterrupts between the ATmega328 and ATmega2560 is Port B.
+
+<wiki:toc max_depth="1" />
+
 =Overview=
 ==The Quick and Dirty Method==
 In your sketch, include:
