@@ -12,7 +12,7 @@ This library has been developed and is supported on the Arduino Uno/Duemilanove 
 
 This library will likely not work with the Arduino Mega.  It appears that the only port that shares PinChangeInterrupts between the ATmega328 and ATmega2560 is Port B.
 
-<wiki:toc max_depth="1" />
+<wiki:toc max_depth="2" />
 
 =Overview=
 ==The Quick and Dirty Method==
