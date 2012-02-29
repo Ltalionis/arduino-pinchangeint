@@ -84,6 +84,7 @@ How to decide if that applies to you?  Read over the [http://code.google.com/p/a
 {{{
 #define NO_PORTC_PINCHANGES
 }}}
+*Remember*: When you define that a port has no pin changes, you can *not* attach an interrupt to that port.  Attempting to do so will make things a little... weird...
 
 Next, *ENJOY!* your Arduino and its Pin Change interrupts.
 
@@ -155,7 +156,9 @@ So if you know, for example, that you have only pins on PORTB, you can uncomment
 #define       NO_PORTC_PINCHANGES
 #define       NO_PORTD_PINCHANGES
 }}}
-This will not set up the corresponding interrupt vectors and it will inline the single remaining interrupt routine.  I have measured the effect on interrupt routine speed; see the [http://code.google.com/p/arduino-pinchangeint/wiki/Speed Speed wiki page here].
+This will not set up the corresponding interrupt vectors and (because only 1 PORT remains in use) it will inline the single remaining interrupt routine.  I have measured the effect on interrupt routine speed; see the [http://code.google.com/p/arduino-pinchangeint/wiki/Speed Speed wiki page here].
+
+Remember:  Once you define that a port has no pin changes on it, make sure you do not attach any interrupts to pins on that port!  There is precious little error checking in this code.
 
 ===Optimization:NO_PIN_ARDUINO===
 New in version 1.5
@@ -254,6 +257,29 @@ void loop() {
   delay(500);
 }
 }}}
+
+=Multiple ISRs on a Pin=
+It is possible to attach more than one interrupt subroutine to a particular pin, however this is not a supported feature.  I mention this so that you can beware of any odd behavior in your code.
+
+The sets of pins attached to a port are simply a linked list.  Here is some code from `addPin()`, which is called by `attachInterrupt()`:
+{{{
+    PCintPin* p=createPin(arduinoPin, mode);
+
+    if (p == NULL) return;
+    // Add to linked list, starting with firstPin
+    if (firstPin == NULL) firstPin=p;
+    else {
+        PCintPin* tmp=firstPin;
+        while (tmp->next != NULL) {
+                tmp=tmp->next;
+        };
+        tmp->next=p;
+    }
+    p->PCintFunc=userFunc;
+}}}
+The effect of adding multiple ISRs to a pin, however, is *undefined*.  If you do so, I don't know which routine will be called first- although it should be whichever is attached first- nor am I inclined to maintain such a feature.
+
+This is a bug, not a feature, but as the Arduino has such a small memory footprint, the code does not contain much error checking.  In other words, caveat programmer!
 
 =Examples=
 Here is an example with a pushbutton connected to pin2 and another to pin3.  One side of the pushbutton is connected to ground.  The other side connects to the Arduino pin.
