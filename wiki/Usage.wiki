@@ -136,7 +136,7 @@ Version 1.4 added changes that allow you to modify the parameters in your sketch
 
 In older versions of the library, you must do this work in `PinChangeIntConfig.h` which comes with the package.
 ===Optimization:MAX_PIN_CHANGE_PINS===
-====_Obsolete_ Limit on the Number of Pins====
+====_\*Obsolete\*_ Limit on the Number of Pins====
 In versions prior to and including 1.2 of the library, the variable MAX_PIN_CHANGE_PINS was used to limit memory usage.  As of version 1.3 this variable is no longer used, as pins are added dynamically.  You must modify this macro in the `PinChangeIntConfig.h` file.
 ===Optimizations:Memory Utilization and Speed===
 There are 3 #define's that control how many interrupt vectors are enabled.  In version 1.4 and later of the library you add this macro to your sketch.  In version 1.3 and earlier of the library you must modify these macros in the `PinChangeIntConfig.h` file. 
