@@ -53,7 +53,7 @@ Why is this important?  It may not be, for you.  This came up when I was program
 In order to enable an Interrupt on any of the Arduino pins using the Pin Change Interrupts, you need to do the following:
   # Enable interrupts on the pin's Port by setting the proper bit in the PCICR register.
   # Enable each pin for interrupts that you care to, by setting the appropriate PCMSK0, PCMSK1, or PCMSK2 register with the bit position of the corresponding pin.  PCMSK0 corresponds to PORT B, PCMSK1 corresponds to PORT C, and PCMSK2 corresponds to PORT D.
-*Assuming* that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any enabled input pin on that port.  Each PORT has an single interrupt vector corresponding to it.  This means that if pin 8 and pin 9 both are enabled for interrupts, then the ATmega328p calls the interrupt routine pointed to by the PCINT0_vect vector because pins 8 and 9 are on PORT B.
+*Assuming* that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any enabled input pin on that port.  Each PORT has a single interrupt vector corresponding to it.  This means that if pin 8 and pin 9 both are enabled for interrupts, then the ATmega328p calls the interrupt routine pointed to by the PCINT0_vect vector because pins 8 and 9 share PORT B.
 
 Note that enabling interrupts globally is as simple as setting the Global Interrupt Enable flag, which is bit 7 of the Status Register (SREG).  This bit is enabled by default.  Also interesting is that the flag is cleared by hardware as soon as an interrupt takes place, and it's set by the Return from Interrupt instruction when the Interrupt routine returns.  It is possible for an interrupt to set this flag, thereby enabling nested interrupts.  This is not done by the PinChangeInt library- that is, nested interrupts are not enabled under the covers.
 
@@ -69,9 +69,40 @@ Vector No.	Program Address	Source	Interrupt Definition
 6		0x005		PCINT2	Pin Change Interrupt Request 2
 }}}
 ==PinChangeInt Details==
-Here is how the library sets up the interrupts, and how it handles them once a pin is interrupted.  This discussion refers to version 1.3 of the PinChangeInt library.  Get it from the Downloads section of this Project.
+Here is how the library sets up the interrupts, and how it handles them once a pin is interrupted.  This discussion refers to version 1.70beta of the PinChangeInt library.  Get it from the Downloads section of this Project.
 ===Setting Up the Ports===
-
+For each port that you have *not* `#define`d `NO_PORTX_CHANGES` for, an object is created that represents the port in software.  Stripped to its bare essentials and ignoring the `#define` macros that enable you to disable certain features, the port class (from whence the port objects come) looks like this:
+{{{
+class PCintPort {
+public:
+        volatile        uint8_t&                portInputReg;
+        static          void attachInterrupt(uint8_t pin, PCIntvoidFuncPtr userFunc, int mode);
+        static          void detachInterrupt(uint8_t pin);
+        static  uint8_t curr;
+        static  uint8_t arduinoPin;
+        static  uint8_t pinState;
+        static uint8_t pinmode;
+protected:
+        class PCintPin {
+        public:
+                PCIntvoidFuncPtr PCintFunc;
+                uint8_t         mode;
+                uint8_t         mask;
+                uint8_t arduinoPin;
+                PCintPin* next;
+        };
+        void            addPin(uint8_t arduinoPin,uint8_t mode,PCIntvoidFuncPtr userFunc);
+        void            delPin(uint8_t mask);
+        volatile        uint8_t&                portPCMask;
+        const           uint8_t                 PCICRbit;
+        uint8_t         lastPinView;
+        PCintPin*       createPin(uint8_t arduinoPin, uint8_t mode);
+        PCintPin*       firstPin;
+};
+}}}
+Here is what each element is for:
+{{{
+}}}
 ===Enabling a Pin===
 ===Responding to an Interrupt===
 ===Disabling a Pin===
