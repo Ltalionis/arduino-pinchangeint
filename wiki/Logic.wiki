@@ -104,7 +104,6 @@ Here is what each element is for:
 <pre>
 class PCintPort {
 public:
-123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 portInputReg: This is a reference to the memory-mapped address of the register which,
 	when read, will give you the status of all the pins on that port.
 attachInterrupt: This is a static method which means its roughly akin to a C function:
@@ -126,14 +125,14 @@ pinState:  The current state of the pin that interrupted us: either HIGH or LOW.
 	is static as well for the reason given above.
 pinmode: The mode you have defined for the curret pin.  This is static as well for the
 	reason given above.
-
+</pre>
 The following members are protected; that is, they are only available within objects of
 type PCintPort, or subclasses of the object (there are no subclasses defined in the
 PCintPort library).
-
+<pre>
 class PCintPin: This class represents any given pin on the port.  It is comprised of:
    PCintFunc: a pointer to the interrupt handler you want to call.
-   mode: the pin s mode.
+   mode: the pin's mode.
    mask: the bitmask of the pin on the port.  Each pin on a port is represented in one of
 	the bits of a register byte.  The mask is simply the bit that is set in the
 	proper position for that pin on that port.
@@ -141,7 +140,6 @@ class PCintPin: This class represents any given pin on the port.  It is comprise
    next: The PCintPins are organized as a linked list attached to the PCintPort.  This
 	points to the next pin in the list; if the last, then it points to NULL.
 
-123456789012345678901234567890123456789012345678901234567890123456789012345678901234567890
 The rest of the protected PCintPort entries follow:
 
 addPin: the method that adds a pin to a port.
@@ -154,14 +152,14 @@ PCICRbit: Represents the bit in the Pin Change Interrupt Control Register (PCICR
 	will turn interrupts on for a port.  If the bit in the proper position of the
 	PCICR is 1, the port will interrupt if one of its enabled bins changes.  If the
 	bit is 0, none of the pins will trigger an interrupt, no matter what the setting
-	of the portPCMask.  There are only 3 bit positions used on the ATmega328 s PCICR,
+	of the portPCMask.  There are only 3 bit positions used on the ATmega328's PCICR,
 	because there are only 3 ports on the processor.
 lastPinView: This state of the pin register at interrupt.  But this is first checked
 	against PCintPort::curr to see which pin(s) triggered our current interrupt, then
 	it is set to PCintPort::curr.  The difficult question is, how do the pins look in
 	an uninterrupted state?  In order to properly gain the first interrupt the values
 	of the uninterrupted pins must be known.  Because if the port is checked at
-	initialization, who s to say that the pins are in the interrupted or uninterrupted
+	initialization, who's to say that the pins are in the interrupted or uninterrupted
 	state?  This makes the very first interrupt on a pin suspect.  Maybe we actually
 	missed the first one.  Maybe we are interrupted and there wasn t really an
 	interrupt.  The easy out that I took was to initially just set lastPinView to be
