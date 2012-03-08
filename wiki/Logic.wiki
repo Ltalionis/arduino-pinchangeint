@@ -104,9 +104,17 @@ Here is what each element is for:
 {{{
 class PCintPort {
 public:
-portInputReg: This is a reference to the memory-mapped address of the register which, when read, will give you the status of all the pins on that port.
-attachInterrupt: This is a static method which means its roughly akin to a C function:  it is a method that can be utilized outside the scope of the class PCintPort.  And this means that your sketch can call it like this:  `PCintPort::attachInterrupt(arguments...)`.  This is the grandaddy method that attaches an interrupt to a pin.
-detachInterrupt: The converse of attachInterrupt(), this detaches an interrupt from a pin.  Similar in that it is called like: `PCintPort::detachInterrupt(argument)`
+12345678901234567890123456789012345678901234567890123456789012345678901234567890
+portInputReg: This is a reference to the memory-mapped address of the register
+	which, when read, will give you the status of all the pins on that port.
+attachInterrupt: This is a static method which means its roughly akin to a C
+	function:  it is a method that can be utilized outside the scope of the
+	class PCintPort.  And this means that your sketch can call it like this:
+		PCintPort::attachInterrupt(arguments...).
+	This is the grandaddy method that attaches an interrupt to a pin.
+detachInterrupt: The converse of attachInterrupt(), this detaches an interrupt
+	from a pin.  Similar in that it is called like:
+		PCintPort::detachInterrupt(argument)`
 curr: The current value of the PORT upon which an interrupt took place.  This is read as soon as possible in the interrupt handler, as there is a small but finite time between when an interrupt takes place and when the handler is able to run.
 arduinoPin: The current arduino pin upon which an interrupt took place.  Its value will be from 0 to 19.  A0 through A5 are equivalent to 14 through 19.  This is a static variable shared by all instances of PCintPort, because there is only arduino pin that we will be handling in any instance.
 pinState:  The current state of the pin that interrupted us: either HIGH or LOW.  This is static as well for the reason given above.
