@@ -154,7 +154,7 @@ PCICRbit: Represents the bit in the Pin Change Interrupt Control Register (PCICR
 	will turn interrupts on for a port.  If the bit in the proper position of the
 	PCICR is 1, the port will interrupt if one of its enabled bins changes.  If the
 	bit is 0, none of the pins will trigger an interrupt, no matter what the setting
-	of the portPCMask.  There are only 3 bit positions used on the ATmega328's PCICR,
+	of the portPCMask.  There are only 3 bit positions used on the ATmega328 s PCICR,
 	because there are only 3 ports on the processor.
 lastPinView: This state of the pin register at interrupt.  But this is first checked
 	against PCintPort::curr to see which pin(s) triggered our current interrupt, then
@@ -163,7 +163,7 @@ lastPinView: This state of the pin register at interrupt.  But this is first che
 	of the uninterrupted pins must be known.  Because if the port is checked at
 	initialization, who s to say that the pins are in the interrupted or uninterrupted
 	state?  This makes the very first interrupt on a pin suspect.  Maybe we actually
-	missed the first one.  Maybe we are interrupted and there wasn't really an
+	missed the first one.  Maybe we are interrupted and there wasn t really an
 	interrupt.  The easy out that I took was to initially just set lastPinView to be
 	the state of the port at construction time.
 createPin: a helper function for addPin().  This is where the PCintPin object is created
