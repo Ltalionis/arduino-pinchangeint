@@ -11,7 +11,7 @@ Note that the theory is similar for the ATmega2560.  The ATmega2560 has more Ext
 
 <wiki:toc max_depth="3" />
 
-= Details =
+= ATmega Details =
 == ATmega328p Pins and Ports ==
 The Arduino's pins are shown below, in parentheses.  The corresponding pin numbers on the ATmega 328p are shown alongside the diagram of the 28-pin dip package:
 {{{
@@ -72,6 +72,10 @@ Vector No.	Program Address	Source	Interrupt Definition
 }}}
 =PinChangeInt Library Details=
 Here is how the library sets up the interrupts, and how it handles them once a pin is interrupted.  This discussion refers to version 1.70beta of the PinChangeInt library.  Get it from the Downloads section of this Project.
+==At Issue==
+Here stated as simply as possible is what we're trying to achieve:
+ Given that we're running a program consisting of synchronous instructions, we will at times receive an asynchronous signal an any one or more pins on our Arduino.  We can be interested in a transition from low to high, from high to low, or both.  At that time we want to interrupt normal program flow and act on the change in a predetermined fashion. 
+
 ==Setting Up the Ports==
 For each port that you have *not* `#define`d `NO_PORTX_CHANGES` for, an object is created that represents the port in software.  Stripped to its bare essentials and ignoring the `#define` macros that enable you to disable certain features, the port class (from whence the port objects come) looks like this:
 {{{
