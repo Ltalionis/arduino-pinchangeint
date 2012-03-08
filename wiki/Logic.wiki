@@ -139,9 +139,9 @@ class PCintPin: This class represents any given pin on the port.  It is comprise
    arduinoPin: the arduino pin number for this PCintPin object.
    next: The PCintPins are organized as a linked list attached to the PCintPort.  This
 	points to the next pin in the list; if the last, then it points to NULL.
-
+</pre>
 The rest of the protected PCintPort entries follow:
-
+<pre>
 addPin: the method that adds a pin to a port.
 delPin: the method that removes a pin from a port.
 portPCMask: this is a reference to a register which indicates by bit position which pin
@@ -167,6 +167,7 @@ lastPinView: This state of the pin register at interrupt.  But this is first che
 createPin: a helper function for addPin().  This is where the PCintPin object is created
 	and filled in.
 firstPin: the pointer to the first PCintPin of the port.
+
 };
 </pre>
 ===Enabling a Pin===
