@@ -9,6 +9,8 @@ The PinChangeInt library is designed to handle the Arduino's pin change interrup
 
 Note that the theory is similar for the ATmega2560.  The ATmega2560 has more External Interrupts, but its PinChange Interrupts are enabled on a different set of its ports: Ports B, J, and K.
 
+<wiki:toc max_depth="3" />
+
 = Details =
 == ATmega328p Pins and Ports ==
 The Arduino's pins are shown below, in parentheses.  The corresponding pin numbers on the ATmega 328p are shown alongside the diagram of the 28-pin dip package:
