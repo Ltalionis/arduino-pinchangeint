@@ -76,9 +76,8 @@ Here is how the library sets up the interrupts, and how it handles them once a p
 Here stated as simply as possible is what we're trying to achieve:
  We will at times throughout the lifecycle of our Arduino sketch receive an asynchronous signal an any one or more pins on the computer.  We may be interested in a transition from low to high, from high to low, or both.  At that time we want to interrupt normal program flow and act on the change in a predetermined fashion, at our option unique to each pin.
 ===The Toolset===
-At our disposal is the ATmega328's architecture, as described above.
-
-==Setting Up the Ports==
+At our disposal is the ATmega328's architecture, as described above.  We will create a C++ class that models its architecture in software.  That is, our class will model the Arduino's pins and the ports in which they are organized.  We start with the ports since they are essentially the containers for the pins:
+==Defining the Ports==
 For each port that you have *not* `#define`d `NO_PORTX_CHANGES` for, an object is created that represents the port in software.  Stripped to its bare essentials and ignoring the `#define` macros that enable you to disable certain features, the port class (from whence the port objects come) looks like this:
 {{{
 class PCintPort {
