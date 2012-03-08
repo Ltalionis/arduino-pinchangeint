@@ -133,7 +133,7 @@ PCintPort library).
 
 class PCintPin: This class represents any given pin on the port.  It is comprised of:
    PCintFunc: a pointer to the interrupt handler you want to call.
-   mode: the pin's mode.
+   mode: the pin`'`s mode.
    mask: the bitmask of the pin on the port.  Each pin on a port is represented in one of
 	the bits of a register byte.  The mask is simply the bit that is set in the
 	proper position for that pin on that port.
