@@ -102,6 +102,32 @@ protected:
 }}}
 Here is what each element is for:
 {{{
+class PCintPort {
+public:
+portInputReg: This is a reference to the memory-mapped address of the register which, when read, will give you the status of all the pins on that port.
+attachInterrupt: This is a static method which means its roughly akin to a C function:  it is a method that can be utilized outside the scope of the class PCintPort.  And this means that your sketch can call it like this:  `PCintPort::attachInterrupt(arguments...)`.  This is the grandaddy method that attaches an interrupt to a pin.
+detachInterrupt: The converse of attachInterrupt(), this detaches an interrupt from a pin.  Similar in that it is called like: `PCintPort::detachInterrupt(argument)`
+curr: The current value of the PORT upon which an interrupt took place.  This is read as soon as possible in the interrupt handler, as there is a small but finite time between when an interrupt takes place and when the handler is able to run.
+arduinoPin: The current arduino pin upon which an interrupt took place.  Its value will be from 0 to 19.  A0 through A5 are equivalent to 14 through 19.  This is a static variable shared by all instances of PCintPort, because there is only arduino pin that we will be handling in any instance.
+pinState:  The current state of the pin that interrupted us: either HIGH or LOW.  This is static as well for the reason given above.
+pinmode: The mode you have defined for the curret pin.  This is static as well for the reason given above.
+The following members are protected; that is, they are only available within objects of type PCintPort, or subclasses of the object (there are no subclasses defined in the PCintPort library).
+class PCintPin: This class represents any given pin on the port.  It is comprised of:
+   PCintFunc: a pointer to the interrupt handler you want to call.
+   mode: the pin's mode.
+   mask: the bitmask of the pin on the port.  Each pin on a port is represented in one of the bits of a register byte.  The mask is simply the bit that is set in the proper position for that pin on that port.
+   arduinoPin: the arduino pin number for this PCintPin object.
+   next: The PCintPins are organized as a linked list attached to the PCintPort.  This points to the next pin in the list; if the last, then it points to NULL.
+
+The rest of the protected PCintPort entries follow:
+addPin: the method that adds a pin to a port.
+delPin: the method that removes a pin from a port.
+portPCMask: this is a reference to a register which indicates by bit position which pin on a port is enabled for interrupts.  That is, a pin with a 1 bit in the proper position in this byte will interrupt the processor.  A pin with a 0 bit in the proper position will not interrupt.
+PCICRbit: Represents the bit in the Pin Change Interrupt Control Register (PCICR) that will turn interrupts on for a port.  If the bit in the proper position of the PCICR is 1, the port will interrupt if one of its enabled bins changes.  If the bit is 0, none of the pins will trigger an interrupt, no matter what the setting of the portPCMask.  There are only 3 bit positions used on the ATmega328's PCICR, because there are only 3 ports on the processor.
+lastPinView: This state of the pin register at interrupt.  But this is first checked against PCintPort::curr to see which pin(s) triggered our current interrupt, then it is set to PCintPort::curr.  The difficult question is, how do the pins look in an uninterrupted state?  In order to properly gain the first interrupt the values of the uninterrupted pins must be known.  Because if the port is checked at initialization, who's to say that the pins are in the interrupted or uninterrupted state?  This makes the very first interrupt on a pin suspect.  Maybe we actually missed the first one.  Maybe we are interrupted and there wasn't really an interrupt.  The easy out that I took was to initially just set lastPinView to be the state of the port at construction time.
+createPin: a helper function for addPin().  This is where the PCintPin object is created and filled in.
+firstPin: the pointer to the first PCintPin of the port.
+};
 }}}
 ===Enabling a Pin===
 ===Responding to an Interrupt===
