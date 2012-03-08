@@ -70,9 +70,9 @@ Vector No.	Program Address	Source	Interrupt Definition
 5		0x004		PCINT1 	Pin Change Interrupt Request 1
 6		0x005		PCINT2	Pin Change Interrupt Request 2
 }}}
-==PinChangeInt Details==
+=PinChangeInt Library Details=
 Here is how the library sets up the interrupts, and how it handles them once a pin is interrupted.  This discussion refers to version 1.70beta of the PinChangeInt library.  Get it from the Downloads section of this Project.
-===Setting Up the Ports===
+==Setting Up the Ports==
 For each port that you have *not* `#define`d `NO_PORTX_CHANGES` for, an object is created that represents the port in software.  Stripped to its bare essentials and ignoring the `#define` macros that enable you to disable certain features, the port class (from whence the port objects come) looks like this:
 {{{
 class PCintPort {
