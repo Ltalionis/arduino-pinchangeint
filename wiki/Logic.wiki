@@ -114,7 +114,7 @@ attachInterrupt: This is a static method which means its roughly akin to a C fun
 	This is the grandaddy method that attaches an interrupt to a pin.
 detachInterrupt: The converse of attachInterrupt(), this detaches an interrupt from a pin.
 	Similar in that it is called like:
-		PCintPort::detachInterrupt(argument)`
+		PCintPort::detachInterrupt(argument)
 curr: The current value of the PORT upon which an interrupt took place.  This is read as
 	soon as possible in the interrupt handler, as there is a small but finite time
 	between when an interrupt takes place and when the handler is able to run.
