@@ -77,15 +77,17 @@ Here stated as simply as possible is what we're trying to achieve:
  We will at times throughout the lifecycle of our Arduino sketch receive an asynchronous signal an any one or more pins on the computer.  We may be interested in a transition from low to high, from high to low, or both.  At that time we want to interrupt normal program flow and act on the change in a predetermined fashion, at our option unique to each pin.
 ==To Do==
 To achieve our goal, we need to do the following:
- * Enable PCICR to enable the port, as described above.
- * Set PCMSKx (where x is 0, 1, or 2) to enable the pin.
  * attach an interrupt, by:
    * saving the current values of the port's pins.
    * creating a new pin, which
      * holds the Arduino pin number
      * holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)
-     * enables the proper bit on the PCMSKx register
-     * sets the PCIFR flag for this port.
+     * enables the proper bit on the PCMSK_x_ register
+     * sets the PCICR flag to enable this port, as mentioned above.
+   * add the pin to the linked list of pins on this port
+   * add a user function to the pin
+ * Set PCMSKx (where x is 0, 1, or 2) to enable the pin.
+
 ===The Toolset===
 At our disposal is the ATmega328's architecture, as described above.  We will create a C++ class that models its architecture in software.  That is, our class will model the Arduino's pins and the ports in which they are organized.  We start with the ports since they are essentially the containers for the pins, and the pins are contained in the ports just as they are in the Arduino:
 ==Defining the Ports and Pins==
