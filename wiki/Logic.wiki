@@ -82,7 +82,7 @@ To achieve our goal, we need to do the following:
    * creating a new pin, which
      * holds the Arduino pin number
      * holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)
-     * enables the proper bit on the PCMSK_x_ register
+     * enables the proper bit on the PCMSKx register
      * sets the PCICR flag to enable this port, as mentioned above.
    * add the pin to the linked list of pins on this port
    * add a user function to the pin
