@@ -211,7 +211,7 @@ firstPin: the pointer to the first PCintPin of the port.
 ==Put it All Together==
 I will grab the algorithm from the ToDo and show how the library puts it into action.  Line numbers are based on version 1.71beta of the library (file PinChangeInt.h). MIKE
 
-I say: _To achieve our goal, we need to do the following:
+I say: _To achieve our goal, we need to do the following:_
  * Assign an interrupt handler to each port from that port's interrupt vector table._
 
  * Attach an interrupt, by:
