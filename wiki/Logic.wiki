@@ -354,3 +354,5 @@ _Then, upon interrupt:_
 {{{
 487                     p->PCintFunc();
 }}}
+= Conclusion =
+That's how it all works!
