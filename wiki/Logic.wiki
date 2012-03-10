@@ -321,7 +321,7 @@ _Then, upon interrupt:_
 {{{
 470         PCintPin* p = firstPin;
 471         while (p) {
-...
+            ...    
 490             p=p->next;
 }}}
      * _If the pin's bit position matches the bit position of a changed pin, we are interested._
