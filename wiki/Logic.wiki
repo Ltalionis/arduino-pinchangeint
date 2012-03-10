@@ -259,11 +259,11 @@ This is done on the following lines:
 }}}
      * _holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)_
 {{{
-329         _p->mode = mode;_
+329         p->mode = mode;
 }}}
      * _holds the bitmask- the bit position of the pin on the 8-bit register that represents active interrupts on the port_
 {{{
-331         _p->mask = digitalPinToBitMask(arduinoPin); // the mask_
+331         p->mask = digitalPinToBitMask(arduinoPin); // the mask
 }}}
    * _add the pin to the linked list of pins on this port_
 {{{
