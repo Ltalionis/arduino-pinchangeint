@@ -344,7 +344,7 @@ _Then, upon interrupt:_
      * _We found our interrupting pin.  So:_
        * _We save the pin's state: its value (HIGH or LOW), its pin number, and its mode._
 {{{
-479                     PCintPort::pinState=PCintPort::curr & p->mask ? HIGH : LOW; // version 1.51, updated 1.6
+479                     PCintPort::pinState=PCintPort::curr & p->mask ? HIGH : LOW;
 ...
 482                     PCintPort::arduinoPin=p->arduinoPin;
 ...
