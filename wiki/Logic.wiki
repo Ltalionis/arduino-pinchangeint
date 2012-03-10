@@ -98,7 +98,8 @@ Then, upon interrupt:
    * We determine if we are interested in the changed pin by AND'ing it with the port's PCMSK.
    * We now save the current values of the port's pins, so the next interrupt handler can see what changed.
    * We now traverse the linked list of pins on this port:
-     * If the pin's bit position matches the bit position of a changed pin, we are interested.  Now we check the pin's mode:
+     * If the pin's bit position matches the bit position of a changed pin, we are interested.
+     * Now we check the pin's mode:
        * If it is CHANGE, or
        * If it is RISING and the value of the bit is 1, or
        * If it is FALLING and the value of the bit is not 1,
@@ -211,6 +212,7 @@ firstPin: the pointer to the first PCintPin of the port.
 ==Put it All Together==
 I will grab the algorithm from the ToDo and show how the library puts it into action; the algorithm is recreated below _in italics_.  Line numbers are based on version 1.71beta of the library (file PinChangeInt.h).
 
+===Setup===
 I say: _To achieve our goal, we need to do the following:
  * Assign an interrupt handler to each port from that port's interrupt vector table._
 This is done on the following lines:
@@ -255,15 +257,15 @@ This is done on the following lines:
 {{{
 328         p->arduinoPin=arduinoPin;
 }}}
-     * holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)
+     * _holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)_
 {{{
-329         p->mode = mode;
+329         _p->mode = mode;_
 }}}
-     * holds the bitmask- the bit position of the pin on the 8-bit register that represents active interrupts on the port
+     * _holds the bitmask- the bit position of the pin on the 8-bit register that represents active interrupts on the port_
 {{{
-331         p->mask = digitalPinToBitMask(arduinoPin); // the mask
+331         _p->mask = digitalPinToBitMask(arduinoPin); // the mask_
 }}}
-   * add the pin to the linked list of pins on this port
+   * _add the pin to the linked list of pins on this port_
 {{{
 343         // Add to linked list, starting with firstPin
 344         if (firstPin == NULL) firstPin=p;
@@ -275,22 +277,80 @@ This is done on the following lines:
 350                 tmp->next=p;
 351         }
 }}}
-   * add a user function to the pin
+   * _add a user function to the pin_
 {{{
 352         p->PCintFunc=userFunc;
 }}}
-   * set the PCICR flag to enable this port, as mentioned above.
+   * _set the PCICR flag to enable this port, as mentioned above._
 {{{
 356         PCICR |= PCICRbit;
 }}}
-   * set PCMSKx (where x is 0, 1, or 2) to enable the pin.
+   * _set PCMSKx (where x is 0, 1, or 2) to enable the pin._
 {{{
 357         portPCMask |= p->mask;
 }}}
-===Enabling a Pin===
 ===Responding to an Interrupt===
-===Disabling a Pin===
-===A===
-===A===
-===A===
-_to be continued_
+Note: Port B shown; other ports are equivalent.
+
+_Then, upon interrupt:_
+ * _The interrupt handler pointed to by the port's interrupt vector obtains the current value of the port register where the interrupt took place._
+{{{
+499 #ifndef NO_PORTB_PINCHANGES
+500 ISR(PCINT0_vect) {
+501     PCintPort::curr = portB.portInputReg; // version 1.6
+}}}
+ * _The interrupt handler calls the port's interrupt handler, which_
+{{{
+502     portB.PCint();
+}}}
+   * _Determines which pin on the port changed by doing an exclusive-or of the current port value with the previous value._
+{{{
+456 void PCintPort::PCint() {
+...
+466         uint8_t changedPins = PCintPort::curr ^ lastPinView;
+}}}
+   * _We determine if we are interested in the changed pin by AND'ing it with the port's PCMSK._
+{{{
+467         changedPins &= portPCMask;
+}}}
+   * _We now save the current values of the port's pins, so the next interrupt handler can see what changed._
+{{{
+468         lastPinView = PCintPort::curr;
+}}}
+   * _We now traverse the linked list of pins on this port:_
+{{{
+470         PCintPin* p = firstPin;
+471         while (p) {
+...
+490             p=p->next;
+}}}
+     * _If the pin's bit position matches the bit position of a changed pin, we are interested._
+{{{
+472             if (p->mask & changedPins) { // a changed bit
+}}}
+       *  _Now we check the pin's mode:_
+       * _If it is CHANGE, or_
+{{{
+475                 if (     p->mode == CHANGE
+}}}
+       * _If it is RISING and the value of the bit is 1, or_
+{{{
+476                     || ((p->mode == RISING)  &&  (PCintPort::curr & p->mask))
+}}}
+       * _If it is FALLING and the value of the bit is not 1,_
+{{{
+477                     || ((p->mode == FALLING) && !(PCintPort::curr & p->mask)) ) {
+}}}
+     * _We found our interrupting pin.  So:_
+       * _We save the pin's state: its value (HIGH or LOW), its pin number, and its mode._
+{{{
+479                     PCintPort::pinState=PCintPort::curr & p->mask ? HIGH : LOW; // version 1.51, updated 1.6
+...
+482                     PCintPort::arduinoPin=p->arduinoPin;
+...
+485                     PCintPort::pinmode=p->mode;
+}}}
+       * _We call the user function specific to this pin._
+{{{
+487                     p->PCintFunc();
+}}}
