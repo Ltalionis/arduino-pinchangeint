@@ -1,0 +1,32 @@
+#summary One-sentence summary of this page.
+
+= Introduction =
+Bugs and caveats here
+
+== Incompatible with SoftwareSerial Library ==
+SoftwareSerial uses Pin Change Interrupts, and as a result it is indeed in direct conflict with this library.
+
+The only way to make them compatible would be to do something like this:
+
+* Figure out which port(s) you want to use for Software Serial.
+* Figure out which port(s) you want to use for Pin Change Interrupts.
+
+Set up the #defines in Pin Change Interrupts so as to shut off the Software Serial ports:
+{{{
+#define NO_PORTx_PINCHANGES
+}}}
+
+Copy the SoftwareSerial library (`SoftwareSerial.h` and `SoftwareSerial.cpp`) to your personal libraries folder; call it mySoftwareSerial or something like this.  Do a global namechange from SoftwareSerial to mySoftwareSerial.
+
+Delete the appropriate ISR in mySoftwareSerial.  For example, if you knew you weren't going to use PORTD for SoftwareSerial, you would delete:
+{{{
+#if defined(PCINT2_vect)
+ISR(PCINT2_vect)
+{
+  SoftwareSerial::handle_interrupt();
+}
+#endif 
+}}}
+and so on.
+
+So this is a limitation, not a bug.
