@@ -8,8 +8,8 @@ SoftwareSerial uses Pin Change Interrupts, and as a result it is indeed in direc
 
 The only way to make them compatible would be to do something like this:
 
-* Figure out which port(s) you want to use for Software Serial.
-* Figure out which port(s) you want to use for Pin Change Interrupts.
+ * Figure out which port(s) you want to use for Software Serial.
+ * Figure out which port(s) you want to use for Pin Change Interrupts.
 
 Set up the #defines in Pin Change Interrupts so as to shut off the Software Serial ports:
 {{{
