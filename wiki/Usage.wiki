@@ -63,7 +63,7 @@ loop() {
   }
 }
 }}}
-New, as of version 1.4, is the ability to apply some optimization switches right in your sketch.  Read over these #defines and decide if any apply to you.  You can add them to your code *ahead* of the `#include PinChangeInt.h`.
+New, as of version 1.4, is the ability to apply some optimization switches right in your sketch.  Read over these #defines and decide if any apply to you.  You can add them to your code *ahead* of the `#include <PinChangeInt.h>`.
 {{{
 // You can reduce the memory footprint of this handler by declaring that there will be no pin change interrupts
 // on any one or two of the three ports.  If only a single port remains, the handler will be declared inline
