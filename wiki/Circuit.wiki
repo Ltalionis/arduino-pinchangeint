@@ -21,11 +21,8 @@ By having a built-in pull-up resistor you reduce parts count on your project.  S
 
 == Connecting ==
 Here's a rough schematic, in ASCII (the `pole`s are the two connections on the switch):
+
 http://s19.postimage.org/41phtkvk3/pushbutton.png
-{{{
-  +---+ pole -- pole + --> Arduino Pin
- gnd
-}}}
 
 == Device Connected to Vcc ==
 Here I show you how to connect an LED and have it turn on along with your switch:
