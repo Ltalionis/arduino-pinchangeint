@@ -34,7 +34,7 @@ http://s19.postimage.org/jwnqcpo77/Arduino_Switch_Vcc.png
 === Bad ===
 If for some reason you want to connect your switch to Vcc, you may want to wire it this way:
 
-http://s19.postimage.org/c5gnp0fr7/Arduino_Switch_Bad.png
+http://s19.postimage.org/rs7x2dtj7/Arduino_Switch_Bad.png
 
 The resistor will be 150-390 ohms.  Here, you would not turn on the Arduino's internal resistor.
 
