@@ -29,7 +29,7 @@ Here I show you how to connect an LED and have it turn on along with your switch
 === Good ===
 You should connect your LED to Vcc, and have a 150 to 390 ohm pull-up/current-limiting resistor in series with it, connected to the Arduino pin (assuming 5V Vcc).  Then connect your switch to ground and to the Arduino pin.  You turn on the Arduino pin's pull-up resistor as usual.  Here is how you would connect it: 
 
-http://s19.postimage.org/jwnqcpo77/Arduino_Switch_Vcc.png
+http://s19.postimage.org/ywpqbf0sj/Arduino_Switch_Vcc.png
 
 === Bad ===
 If for some reason you want to connect your switch to Vcc, you may want to wire it this way:
