@@ -7,8 +7,6 @@ I have conducted extensive speed tests of this library, since its functionality 
 
 = Details =
 
-I have created a report using LibreOffice.  I also present a PDF version.
+I have created a report using LibreOffice.  I present a PDF version for download in the Downloads section..
 
-http://code.google.com/p/arduino-pinchangeint/downloads/detail?name=PinChangeInt%20Speed%20Test-1.4.pdf
-
-Note that in the document I discuss an upcoming release, ooPinChangeInt-1.0.  It is not available as of yet (15 Jan. 2012).  As they say, "Coming soon!"
+Note that in the document I discuss a fork of this library, ooPinChangeInt.  See http://code.google.com/p/oopinchangeint/
