@@ -1,4 +1,4 @@
-#summary Arduino MEGA support.
+#summary Arduino Mega support notes.
 
 = Introduction =
 
