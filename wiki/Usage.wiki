@@ -8,7 +8,7 @@ Here's how to use the PinChangeInt library in your own programs. I assume you ha
 
 In general, I am writing this for version 1.4 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
 
-This library has been developed and is supported on the Arduino Uno/Duemilanove mostly.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work. The library has been updated to work with the Arduino Mega, although there are some issues with it.
+This library has been developed and is supported on the Arduino Uno/Duemilanove mostly.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work. The library has been updated to work with the Arduino Mega, although there are some issues with it: Users report "I have had excellent success with Port K pins (all of them). The only issue I have found is that I am unable to get Port J to trigger an interrupt on pin 15."
 
 <wiki:toc max_depth="3" />
 
