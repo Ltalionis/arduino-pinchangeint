@@ -2,8 +2,6 @@
 #labels Featured,Phase-Implementation
 
 =Introduction=
-_Updates for v1.5: added a pinState variable.  Added optimizations to eliminate code for pinState and arduinoPin from being compiled.  Search in this page for "pinState" to see the new stuff._
-
 Here's how to use the PinChangeInt library in your own programs. I assume you have properly installed the library.  See the Installation wiki page for more information.
 
 In general, I am writing this for version 1.4 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
