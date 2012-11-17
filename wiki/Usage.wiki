@@ -108,7 +108,7 @@ Returns -1 if unable to create a new PCintPin object, 1 if the interrupt is enab
 {{{
 void detachInterrupt(uint8_t pin)
 }}}
-Stops interrupting on the given pin. The PCintPin object is not removed from the list of pins because the delete() function does not work, and it is reused if an interrupt is attached to the pin later. An interrupt can be attached later and its mode (RISING, FALLING, or CHANGE) modified.  BUG: if the interrupt is reattached the programmer cannot attach a different user function.
+Stops interrupting on the given pin. The PCintPin object is not removed from the list of pins because the delete() function does not work, and it is reused if an interrupt is attached to the pin later. An interrupt can be attached later and its mode (RISING, FALLING, or CHANGE) and user function pointer modified.
 ----
 {{{
 static uint8_t arduinoPin
