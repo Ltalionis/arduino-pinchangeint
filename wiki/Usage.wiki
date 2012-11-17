@@ -95,18 +95,20 @@ Next, *ENJOY!* your Arduino and its Pin Change interrupts.
 ===Public Methods and Variables===
 ----
 {{{
-void attachInterrupt(uint8_t pin, void *userFunc, int mode)
+int8_t attachInterrupt(uint8_t pin, void *userFunc, int mode)
 }}}
 Attaches an interrupt to the given pin.  The interrupt will call the function `userFunc`, based on the `mode`.  The arguments are:
   * `pin` - The pin on the Arduino that you want to attach an interrupt to.
   * `userFunc` - A user-defined function that the interrupt routine will call.
   * `mode` - The interrupt will trigger based on `mode`, which can be one of *RISING*, *FALLING*, or *CHANGE*
 Pin Change Interrupts in truth trigger on CHANGE.  Whether it was RISING or FALLING is determined by the Interrupt handler- that is, in software.  This has some consequences to the interrupt code:  You may choose to trigger on FALLING, and the interrupt will take place when the level transitions to LOW, but for a fast-changing signal it is possible to read a HIGH level on the pin.  This is because the state of the pin is checked inside the handler- at a couple of microseconds after the interrupt.  In such a case, your interrupt handler may not run. See the pinState variable below for more discussion.
+
+Returns -1 if unable to create a new PCintPin object, 1 if the interrupt is enabled on a new pin, and 0 if the interrupt is enabled on a previously-enabled pin.
 ----
 {{{
 void detachInterrupt(uint8_t pin)
 }}}
-Stops interrupting on the given pin.
+Stops interrupting on the given pin. The PCintPin object is not removed from the list of pins because the delete() function does not work, and it is reused if an interrupt is attached to the pin later. An interrupt can be attached later and its mode (RISING, FALLING, or CHANGE) modified.  BUG: if the interrupt is reattached the programmer cannot attach a different user function.
 ----
 {{{
 static uint8_t arduinoPin
