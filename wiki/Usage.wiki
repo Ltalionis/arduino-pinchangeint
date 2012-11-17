@@ -266,29 +266,6 @@ void loop() {
 }
 }}}
 
-==Multiple ISRs on a Pin==
-It is possible to attach more than one interrupt subroutine to a particular pin, however this is not a supported feature.  I mention this so that you can beware of any odd behavior in your code.
-
-The sets of pins attached to a port are simply a linked list.  Here is some code from `addPin()`, which is called by `attachInterrupt()`:
-{{{
-    PCintPin* p=createPin(arduinoPin, mode);
-
-    if (p == NULL) return;
-    // Add to linked list, starting with firstPin
-    if (firstPin == NULL) firstPin=p;
-    else {
-        PCintPin* tmp=firstPin;
-        while (tmp->next != NULL) {
-                tmp=tmp->next;
-        };
-        tmp->next=p;
-    }
-    p->PCintFunc=userFunc;
-}}}
-The effect of adding multiple ISRs to a pin, however, is *undefined*.  If you do so, I don't know which routine will be called first- although it should be whichever is attached first- nor am I inclined to maintain such a feature.
-
-This is a bug, not a feature, but as the Arduino has such a small memory footprint, the code does not contain much error checking.  In other words, caveat programmer!
-
 =Examples=
 Here is an example with a pushbutton connected to pin2 and another to pin3.  One side of the pushbutton is connected to ground.  The other side connects to the Arduino pin.
 {{{
