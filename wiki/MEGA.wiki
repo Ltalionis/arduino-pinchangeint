@@ -18,7 +18,7 @@ From cserveny's notes:
 
 Mega and friends are using port B, J and K for interrupts.  B is working without any modifications.
 
-J is mostly useless, because of the hardware UART. I was not able to get pin change notifications from the TX pin (14), so only 15 left. All other (PORT J) pins are not connected on the Arduino boards.  *If you can verify this for me, I would love to know for user.  Please send me an email or post to the bug reports section.  Thanks.  -_Ed_*
+J is mostly useless, because of the hardware UART. I was not able to get pin change notifications from the TX pin (14), so only 15 left. All other (PORT J) pins are not connected on the Arduino boards.  *If you can get pin 14 to work, let me know.  Please send me an email or post to the bug reports section.  Thanks.  -_Ed_*
 
 K controls Arduino pin A8-A15, working fine.
 
