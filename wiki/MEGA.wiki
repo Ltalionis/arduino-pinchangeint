@@ -8,7 +8,7 @@ This page is some chitchat about the Arduino MEGA.  This information generally a
 NOTE:  I don't have a Mega, so I rely on you to give me error (or working) reports!  Please give me your feedback; thanks.
 
 = Thanks = 
-Thanks to cserveny...@gmail.com for the MEGA code!
+Thanks to cserveny.tamas for the MEGA code!
 
 = Details =
 
