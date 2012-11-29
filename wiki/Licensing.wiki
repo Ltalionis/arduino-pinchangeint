@@ -1,4 +1,4 @@
-#summary I (GreyGnome) have assigned the GPL v3 to this license. Why not LPGL?
+#summary I (GreyGnome) have assigned the GPL v3 to this library. Why not LPGL, or MIT, or something less restrictive?
 
 = Introduction =
 
