@@ -1,0 +1,15 @@
+#summary I (GreyGnome) have assigned the GPL v3 to this license. Why not LPGL?
+
+= Introduction =
+
+Add controversial content here.
+
+
+= Details =
+
+Here's what I think.
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
