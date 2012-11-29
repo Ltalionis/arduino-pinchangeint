@@ -27,6 +27,6 @@ K controls Arduino pin A8-A15, working fine.
 
 Note:  To remain consistent, I have treated Port J the same as any other port, and have not included PORTJ_PINCHANGES as per his suggestion:
   * _Maybe we should have PORTJ_PINCHANGES to enable PJ, because they will be most likely unused._
-All ports should behave the same, no matter how trivial those ports may seem... there should be no surprises...
+...But I believe all ports should behave the same, no matter how trivial those ports may seem... there should be no surprises...
 
 Enjoy!
