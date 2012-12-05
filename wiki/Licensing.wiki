@@ -1,9 +1,7 @@
 #summary I (GreyGnome) have assigned the GPL v3 to this library. Why not LPGL, or MIT, or something less restrictive?
 
 = Introduction =
-
-Add controversial content here.
-
+Nobody has complained, nobody has asked, but nevertheless I feel the need to pontificate. Why? Because based on downloads figures I feel I have an audience.
 
 = Details =
 
