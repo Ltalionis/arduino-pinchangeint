@@ -1,0 +1,9 @@
+#summary How to Download the package.
+
+= Introduction =
+
+Google no longer allows file uploads to Google code. Therefore, zip files are made available on Bintray.
+
+= Details =
+
+Go here to get the latest version: *https://bintray.com/greygnome/generic/PinChangeInt/view*
