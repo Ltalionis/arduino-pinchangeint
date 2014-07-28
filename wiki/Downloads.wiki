@@ -7,4 +7,4 @@ Google no longer allows file uploads to Google code. Therefore, zip files are ma
 
 = Details =
 
-Go here to get the latest version: *https://bintray.com/greygnome/generic/PinChangeInt/view*
+Go here to get the latest version: https://bintray.com/greygnome/generic/PinChangeInt/view
