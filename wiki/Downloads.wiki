@@ -1,4 +1,5 @@
 #summary How to Download the package.
+#labels Featured
 
 = Introduction =
 
