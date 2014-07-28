@@ -8,6 +8,7 @@ Google no longer allows file uploads to Google code. Therefore, zip files are ma
 = Details =
 
 Here is the download page: https://bintray.com/greygnome/generic/PinChangeInt/view
+
 Go here to get the latest version: <a href='https://bintray.com/greygnome/generic/PinChangeInt/_latestVersion'><img src='https://api.bintray.com/packages/greygnome/generic/PinChangeInt/images/download.png'></a>
 
 Click on the "Files" menu item.
