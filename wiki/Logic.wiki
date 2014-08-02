@@ -303,7 +303,7 @@ _Then, upon interrupt:_
 {{{
 502     portB.PCint();
 }}}
-   * _Determines which pin on the port changed by doing an exclusive-or of the current port value with the previous value._
+   * _Determines which pin(s) on the port changed by doing an exclusive-or of the current port value with the previous value._
 {{{
 456 void PCintPort::PCint() {
 ...
@@ -341,7 +341,7 @@ _Then, upon interrupt:_
 {{{
 477                     || ((p->mode == FALLING) && !(PCintPort::curr & p->mask)) ) {
 }}}
-     * _We found our interrupting pin.  So:_
+     * _We found an interrupting pin.  So:_
        * _We save the pin's state: its value (HIGH or LOW), its pin number, and its mode._
 {{{
 479                     PCintPort::pinState=PCintPort::curr & p->mask ? HIGH : LOW;
@@ -354,5 +354,6 @@ _Then, upon interrupt:_
 {{{
 487                     p->PCintFunc();
 }}}
+       * _We continue on with the other pins in this port, to see if any of them changed as well._
 = Conclusion =
 That's how it all works!
