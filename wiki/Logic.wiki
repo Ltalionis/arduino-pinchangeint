@@ -354,6 +354,6 @@ _Then, upon interrupt:_
 {{{
 487                     p->PCintFunc();
 }}}
-       * _We continue on with the other pins in this port, to see if any of them changed as well._
+     * _We continue on with the other pins in this port, to see if any of them changed as well._
 = Conclusion =
 That's how it all works!
