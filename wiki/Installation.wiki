@@ -12,7 +12,7 @@ Go to your Arduino's libraries folder.  If you don't know where that is, look in
 == Linux or MacOS ==
 On Linux or MacOS, cd to it.  The command line `unzip` tool will properly create all subdirectories in the zip archive.
 {{{
-unzip /path/to/pinchangeint-v1.4.zip
+unzip /path/to/pinchangeint-X.YYYY.zip
 }}}
 
 == Windows ==
