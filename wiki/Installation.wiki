@@ -21,27 +21,8 @@ On Windows, open up your unzip tool- it may specify a location where you want to
 Alternatively, you can simply open up the zip archive and open another window to your Arduino libraries folder.  Then drag the PinChangeInt folder over to the libraries folder.
 
 == Included in the Archive ==
-The following files and directories are included in the archive:
-{{{
-PinChangeInt/PinChangeInt.h 
-PinChangeInt/keywords.txt   
-PinChangeInt/Examples/ByteBuffer/ByteBuffer.cpp                     (version 1.70beta and above)
-PinChangeInt/Examples/ByteBuffer/ByteBuffer.h                       (version 1.70beta and above)
-PinChangeInt/Examples/PinChangeIntSpeedTest/PinChangeIntSpeedTest.pde
-PinChangeInt/Examples/PinChangeIntTest/PinChangeIntTest.pde         (version 1.70beta and above)
-cppfix/cppfix.h
-MemoryFree/MemoryFree.cpp   
-MemoryFree/MemoryFree.h
-}}}
-The cppfix directory is necessary only for Arduino versions prior to 1.0.  If you are using Arduino-1.0 or above, you can remove it.
+There are  additional files and directories are included in the archive:
 
 The MemoryFree library is included for running speed and size tests.  If you don't want it, you can remove it.
 
-The ByteBuffer library is included for use by the PinChangeIntTest sketch.  If you want to use that sketch, move the entire directory (folder) to the libraries directory (folder), at the same level as the PinChangeInt directory (folder).  That is, when you list the contents of the Arduino libraries folder you should see both the PinChangeInt and the ByteBuffer directories (folders).  If you want to use the ByteBuffer library, that is.
-
-Files
-{{{
-PinChangeInt/PinChangeInt.cpp
-PinChangeInt/PinChangeIntConfig.h
-}}}
-are deprecated starting in Version 1.4 and will no longer be installed.
+The ByteBuffer library is included for use by the PinChangeIntTest sketch. If you don't want it, you can remove this too.
