@@ -5,7 +5,7 @@
 
 The best way to get started using this library is to try out the Simple Example, included in the distribution. Here's what to do:
   # Download the zipfile. Go here to get the latest version: <a href='https://bintray.com/greygnome/generic/PinChangeInt/_latestVersion'><img src='https://api.bintray.com/packages/greygnome/generic/PinChangeInt/images/download.png'/></a> Click on the "Files" menu item.
-  # Install the library. See 
+  # Install the library. See https://code.google.com/p/arduino-pinchangeint/wiki/Installation
 
 
 = Details =
