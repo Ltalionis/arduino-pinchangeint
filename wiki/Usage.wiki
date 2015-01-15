@@ -90,11 +90,11 @@ Next, *ENJOY!* your Arduino and its Pin Change interrupts.
 ==Reference==
 ===Convenient Defines===
 {{{
-#define	detachPinChangeInterrupt(pin)		
-#define	attachPinChangeInterrupt(pin,userFunc,mode)  'Note: You dont need to pass the pointer here; just give the function name.'
-#define getInterruptedPin()
+detachPinChangeInterrupt(pin)		
+attachPinChangeInterrupt(pin,userFunc,mode)  'Note: You dont need to pass the pointer here; just give the function name.'
+getInterruptedPin()
 }}}
-These point to PCintPort::detachInterrupt(), PCintPort::attachInterrupt(), and PCintPort::getArduinoPin(), respectively. Read below for details on the individual functions.
+These are defined to work more conveniently than PCintPort::detachInterrupt(), PCintPort::attachInterrupt(), and PCintPort::getArduinoPin(), respectively. Read below for details on the individual functions.
 ===Public Methods and Variables===
 ----
 {{{
