@@ -4,9 +4,9 @@
 =Introduction=
 Here's how to use the PinChangeInt library in your own programs. I assume you have properly installed the library.  See the Installation wiki page for more information.
 
-In general, I am writing this for version 1.4 and above of the PinChangeInt library, but most things will apply to earlier versions as well.
+In general, I am writing this for version 2.40-rc2 and above of the PinChangeInt library.
 
-This library has been developed and is supported on the Arduino Uno/Duemilanove mostly.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work. The library has been updated to work with the Arduino Mega, although there are some issues with it: Users report "I have had excellent success with Port K pins (all of them). The only issue I have found is that I am unable to get Port J to trigger an interrupt on pin 15."
+This library has been developed and is supported on the Arduino Uno/Duemilanove and Mega2560.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work, as will the Arduino Mega ADK and the Arduino Mega 2560. Be sure to read the README regarding issues with Arduinos based on the 2560 processor.
 
 <wiki:toc max_depth="3" />
 
@@ -27,13 +27,13 @@ void quicfunc() {
 }}}
 Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal.  In `setup()`, attach an interrupt to your pin.  Here, we attach to pin 2:
 {{{
-PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
+attachPinChangeInterrupt(2, quicfunc, CHANGE);
 }}}
 In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
 {{{
 setup() {
-  pinMode(2, INPUT); digitalWrite(2, HIGH);
-  PCintPort::attachInterrupt(2, &quicfunc, CHANGE);
+  pinMode(2, INPUT_PULLUP);
+  attachPinChangeInterrutp(2, quicfunc, CHANGE);
   Serial.begin(115200);
   Serial.println("---------------------------------------");
 }
