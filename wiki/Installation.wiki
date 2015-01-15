@@ -10,10 +10,15 @@ The PinChangeInt code is delivered in a zip file with associated examples and ot
 Go to your Arduino's libraries folder.  If you don't know where that is, look in your Arduino IDE for the library path:  open up the Preferences menu item and look at the *Sketchbook location* entry.  The libraries path will be in the `libraries` directory beneath the Sketchbook location.
 
 == Linux or MacOS ==
-On Linux or MacOS, cd to it.  The command line `unzip` tool will properly create all subdirectories in the zip archive.
+On Linux or MacOS, cd to it.  The command line `unzip` tool will properly create all subdirectories in the zip archive, use it like:
 {{{
 unzip /path/to/pinchangeint-X.YYYY.zip
 }}}
+For example:
+{{{
+unzip /path/to/pinchangeint-2.40-rc2.zip
+}}}
+
 
 == Windows ==
 On Windows, open up your unzip tool- it may specify a location where you want to unzip your files.  Make sure it will unzip to the location given in the IDE.  Also make sure that you recreate full paths, if your zip tool has that option as well.
