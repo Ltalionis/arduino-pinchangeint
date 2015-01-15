@@ -3,14 +3,15 @@
 = Quick Start Guide for the PinChangeInt library =
 (if you are a beginner, you are in the right place)
 
+If you have an Arduino Uno or any Arduino based on the ATmega328 processor, you can follow this without change. Users on other Arduinos can just read but not run the program. If you have an Arduino with an ARM processor, you should not even be here. There are no PinChangeInterrupts on ARM-based (32-bit) Arduinos. You want to use good ol' attachInterrupt().
+
 The best way to get started using this library is to try out the Simple Example, included in the distribution. Here's what to do:
   # Download the zipfile. Go here to get the latest version: <a href='https://bintray.com/greygnome/generic/PinChangeInt/_latestVersion'><img src='https://api.bintray.com/packages/greygnome/generic/PinChangeInt/images/download.png'/></a> Click on the "Files" menu item.
   # Install the library. See https://code.google.com/p/arduino-pinchangeint/wiki/Installation
+  # Wire a simple switch to port A4 of your Arduino. Attach the other side to Gnd. Double check your wiring!
+  # Open your Arduino IDE. Go to the menu item: File->Sketchbook->libraries->PinChangeInt->Examples->SimpleExample328
+  # Upload it.
+  # Go to the menu item Tools->Serial Monitor. Watch the monitor output.
+  # Flip your switch. You should see the "Pin was interrupted..." output change, as your switch interrupts the processor.
 
-
-= Details =
-
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= Next Steps =
