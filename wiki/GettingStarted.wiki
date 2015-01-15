@@ -15,3 +15,6 @@ The best way to get started using this library is to try out the Simple Example,
   # Flip your switch. You should see the "Pin was interrupted..." output change, as your switch interrupts the processor.
 
 = Next Steps =
+Go to the Usage page https://code.google.com/p/arduino-pinchangeint/wiki/Usage, and read up on the "Quick and Dirty method." This will help you to program your own interrupt subroutine.
+
+Look at some of the other Examples that were sent along with the program. Things can get pretty complicated pretty quickly, but if you're patient, you should _Time to eat a banana!_ be dealing with interrupts _That was good!_ in little time.
