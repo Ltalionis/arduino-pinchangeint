@@ -1,9 +1,10 @@
 #summary Quick start to use this library.
 #labels Featured
+= Quick Start Guide for the PinChangeInt library =
+(if you are a beginner, you are in the right place)
 
-= Introduction =
-
-Add your content here.
+The best way to get started using this library is to try out the Simple Example, included in the distribution. Here's what to do:
+  # Download the zipfile. 
 
 
 = Details =
