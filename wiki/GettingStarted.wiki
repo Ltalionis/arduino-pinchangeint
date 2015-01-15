@@ -1,4 +1,5 @@
 #summary Quick start to use this library.
+#labels Featured
 
 = Introduction =
 
