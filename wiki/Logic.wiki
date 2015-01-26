@@ -3,11 +3,11 @@
 
 = Introduction =
 
-The ATmega328p has two different kinds of interrupts: “external”, and “pin change”.  There are only two external interrupt pins, INT0 and INT1, and they are mapped to Arduino pins 2 and 3.  These interrupts can be set to trigger on RISING or FALLING signal edges, or on low level.  On the other hand the pin change interrupts can be enabled on any or all of the Arduino's signal pins.  They are triggered equally on RISING or FALLING signal edges, so it is up to the interrupt code to determine what happened (did the signal rise, or fall?) and handle it properly.  Furthermore, the pin change interrupts are grouped into “port”s on the ATmega MCU, so if there's an interrupt on any enabled pin, a single interrupt vector (subroutine) is called. There are 3 ports on the Arduino Uno, so there are 3 pin change interrupt vectors for the entire body of 19 pins.  This makes the job of resolving the action on a single pin even more complicated.  The interrupt routine should be fast and accurate but this complication is the enemy of speed, because software is required to resolve the pins as well as determine if we were interested in the type of change that occurred on that pin.
+The ATmega Arduino processors generally two different kinds of interrupts: “external”, and “pin change”.  There are only two external interrupt pins, INT0 and INT1, and they are mapped to Arduino pins 2 and 3.  These interrupts can be set to trigger on RISING or FALLING signal edges, or on low level.  On the other hand the pin change interrupts can be enabled on many more (or all, in the case of ATmega328p-based boards) of the Arduino's signal pins.  They are triggered equally on RISING or FALLING signal edges, so it is up to the interrupt code to determine what happened (did the signal rise, or fall?) and handle it properly.  Furthermore, the pin change interrupts are grouped into “port”s on the ATmega MCU, so if there's an interrupt on any enabled pin, a single interrupt vector (subroutine) is called. There are 3 ports on the Arduino Uno, so there are 3 pin change interrupt vectors for the entire body of 19 pins.  This makes the job of resolving the action on a single pin even more complicated because software is required to resolve the pins as well as determine if we were interested in the type of change that occurred on that pin. The interrupt routine should be fast and accurate but these complications make that challenging, 
 
-The PinChangeInt library is designed to handle the Arduino's pin change interrupts.  This is a description of how the ATmega328p Pin Change Interrupts work, and how the PinChangeInt library handles the situation.
+The PinChangeInt library is designed to handle the Arduino's pin change interrupts.  This is a description of how the Pin Change Interrupts work and how the PinChangeInt library handles the situation. Most of this page focuses on the ATmega328p.
 
-Note that the theory is similar for the ATmega2560.  The ATmega2560 has more External Interrupts, but its PinChange Interrupts are enabled on a different set of its ports: Ports B, J, and K.
+Note that the theory is similar for the ATmega2560, and any other ATmega chip that provides Pin Change Interrupts. The ATmega2560 for example has more External Interrupts, but its PinChange Interrupts are enabled on a different set of its ports: Ports B, J, and K.
 
 <wiki:toc max_depth="3" />
 
@@ -37,7 +37,7 @@ Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168, reprod
 
 The ATmega328 and its kind (ATmega168, ATmega2560) all use PORTs for their input and outputs.  A PORT is essentially a group of pins on the ATmega processor.  They are interesting because the pins grouped in each PORT share some things in common.  For example, you can read all the pins in a PORT in one command.
 
-How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link or shown above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are different PORTs on the ATmega2560 used in the Arduino Mega, and not all of those PORTs are available as pins on the Arduino board layout.
+How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link or shown above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are different PORTs on the ATmega2560 used in the Arduino Mega, and not all of those PORTs are available as pins on the Arduino board layout. But the idea is the same.
 
 This is a summary of the Arduino-to-port mappings that are available to you:
 {{{
@@ -51,7 +51,7 @@ This is a summary of the Arduino-to-port mappings that are available to you:
 Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the PORT state register.
 
 ==ATmega2560 Available Pins and PORTS==
-Regarding the MEGA and friends, Cserveny says: "J is mostly useless, because of
+Following is a table of the Pins available for Pin Change Interrupts. Regarding the MEGA and friends, Cserveny says: "J is mostly useless, because of
 the hardware UART...  (many) pins are not connected on the arduino boards." The
 following pins are usable PinChangeInt pins on the Mega (ATmega1280 and
 ATmega2560-based Arduinos**):
@@ -70,10 +70,10 @@ Arduino              Arduino              Arduino
 ...indeed, the ATmega2560 chip supports many more Pin Change Interrupt pins but
 they are unavailable on the Arduino, unless you want to solder teeny tiny wires.
 
-  * * Note: Arduino Pin 0 is PE0 (PCINT8), which is RX0 and thus is not supported by
+  * `*` Note: Arduino Pin 0 is PE0 (PCINT8), which is RX0 and thus is not supported by
 this library.  It is the same pin the Arduino uses to upload sketches, and they
 are connected to the FT232RL USB-to-Serial chip (ATmega16U2 on the R3).
-  * ** On the MegaADK, according to http://arduino.cc/en/Main/ArduinoBoardMegaADK:
+  * `**` On the MegaADK, according to http://arduino.cc/en/Main/ArduinoBoardMegaADK:
 "USB Host: MAX3421E. The MAX3421E comunicate with Arduino with the SPI bus. So
 it uses the following pins:
 Digital: 7 (RST), 50 (MISO), 51 (MOSI), 52 (SCK). NB: Please do not use Digital
