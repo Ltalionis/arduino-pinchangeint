@@ -50,6 +50,36 @@ This is a summary of the Arduino-to-port mappings that are available to you:
 
 Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the PORT state register.
 
+==ATmega2560 Available Pins and PORTS==
+Regarding the MEGA and friends, Cserveny says: "J is mostly useless, because of
+the hardware UART...  (many) pins are not connected on the arduino boards." The
+following pins are usable PinChangeInt pins on the Mega (ATmega1280 and
+ATmega2560-based Arduinos**):
+{{{
+Arduino              Arduino              Arduino
+  Pin*  PORT PCINT     Pin   PORT PCINT     Pin   PORT PCINT
+  A8     PK0  16       10     PB4   4       SS     PB0   0
+  A9     PK1  17       11     PB5   5       SCK    PB1   1
+ A10     PK2  18       12     PB6   6       MOSI   PB2   2
+ A11     PK3  19       13     PB7   7**     MISO   PB3   3
+ A12     PK4  20       14     PJ1  10
+ A13     PK5  21       15     PJ0   9
+ A14     PK6  22
+ A15     PK7  23
+}}}
+...indeed, the ATmega2560 chip supports many more Pin Change Interrupt pins but
+they are unavailable on the Arduino, unless you want to solder teeny tiny wires.
+
+  * * Note: Arduino Pin 0 is PE0 (PCINT8), which is RX0 and thus is not supported by
+this library.  It is the same pin the Arduino uses to upload sketches, and they
+are connected to the FT232RL USB-to-Serial chip (ATmega16U2 on the R3).
+  * ** On the MegaADK, according to http://arduino.cc/en/Main/ArduinoBoardMegaADK:
+"USB Host: MAX3421E. The MAX3421E comunicate with Arduino with the SPI bus. So
+it uses the following pins:
+Digital: 7 (RST), 50 (MISO), 51 (MOSI), 52 (SCK). NB: Please do not use Digital
+pin 7 as input or output because is used in the comunication (sic) with
+MAX3421E "
+
 ==ATMega328p Pin Change Interrupts==
 ===Enabling===
 In order to enable an Interrupt on any of the Arduino pins using the Pin Change Interrupts, you need to do the following:
