@@ -51,10 +51,9 @@ This is a summary of the Arduino-to-port mappings that are available to you:
 Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the PORT state register.
 
 ==ATmega2560 Available Pins and PORTS==
-Following is a table of the Pins available for Pin Change Interrupts. Regarding the MEGA and friends, Cserveny says: "J is mostly useless, because of
-the hardware UART...  (many) pins are not connected on the arduino boards." The
-following pins are usable PinChangeInt pins on the Mega (ATmega1280 and
-ATmega2560-based Arduinos**):
+The following pins are usable PinChangeInt pins on the Mega (ATmega1280 and
+ATmega2560-based Arduinos**). Cserveny says: "J is mostly useless, because of
+the hardware UART..."
 {{{
 Arduino              Arduino              Arduino
   Pin*  PORT PCINT     Pin   PORT PCINT     Pin   PORT PCINT
@@ -67,11 +66,9 @@ Arduino              Arduino              Arduino
  A14     PK6  22
  A15     PK7  23
 }}}
-...indeed, the ATmega2560 chip supports many more Pin Change Interrupt pins but
-they are unavailable on the Arduino, unless you want to solder teeny tiny wires.
+...indeed, the ATmega2560 chip supports many more Pin Change Interrupt pins but they are unavailable on the Arduino, unless you want to solder teeny tiny wires.
 
-  * `*` Note: Arduino Pin 0 is PE0 (PCINT8), which is RX0 and thus is not supported by
-this library.  It is the same pin the Arduino uses to upload sketches, and they
+  * `*` Note: Arduino Pin 0 is PE0 (PCINT8), which is RX0 and thus is not supported by this library.  It is the same pin the Arduino uses to upload sketches, and they
 are connected to the FT232RL USB-to-Serial chip (ATmega16U2 on the R3).
   * `**` On the MegaADK, according to http://arduino.cc/en/Main/ArduinoBoardMegaADK:
 "USB Host: MAX3421E. The MAX3421E comunicate with Arduino with the SPI bus. So
