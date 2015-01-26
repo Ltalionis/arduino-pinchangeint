@@ -37,7 +37,7 @@ Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168, reprod
 
 The ATmega328 and its kind (ATmega168, ATmega2560) all use PORTs for their input and outputs.  A PORT is essentially a group of pins on the ATmega processor.  They are interesting because the pins grouped in each PORT share some things in common.  For example, you can read all the pins in a PORT in one command.
 
-How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link or shown above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are more PORTs on the ATmega2560 used in the Arduino Mega, but only those 3 PORTs allow for Pin Change interrupts on those bigger chips, too.
+How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link or shown above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are different PORTs on the ATmega2560 used in the Arduino Mega, and not all of those PORTs are available as pins on the Arduino board layout.
 
 This is a summary of the Arduino-to-port mappings that are available to you:
 {{{
