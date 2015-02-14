@@ -89,15 +89,15 @@ How to decide if that applies to you?  Read over the [http://code.google.com/p/a
 
 Next, *ENJOY!* your Arduino and its Pin Change interrupts.
 
-==Reference==
-===Convenient Defines===
+=Reference=
+==Convenient Defines==
 {{{
 detachPinChangeInterrupt(pin)		
 attachPinChangeInterrupt(pin,userFunc,mode)  'Note: You dont need to pass the pointer here; just give the function name.'
 getInterruptedPin()
 }}}
 These are defined to work more conveniently than PCintPort::detachInterrupt(), PCintPort::attachInterrupt(), and PCintPort::getArduinoPin(), respectively. Read below for details on the individual functions.
-===Public Methods and Variables===
+==Public Methods and Variables==
 ----
 {{{
 int8_t attachInterrupt(uint8_t pin, void *userFunc, int mode)
@@ -143,10 +143,10 @@ There are a small number of parameters that the programmer can modify to limit t
 
 *For PinChangeInt versions prior to 1.4*, these parameters _*must*_ be set in the `PinChangeIntConfig.h` file which comes with the package.  They will have no effect if set anywhere else, including your sketch.  Trust me on this one:  You must go to the libraries directory, and edit this config file itself for it to be of use.
 
-===Optimization:MAX_PIN_CHANGE_PINS===
-====_`*`Obsolete`*`_ Limit on the Number of Pins====
+==Optimization:MAX_PIN_CHANGE_PINS==
+===_`*`Obsolete`*`_ Limit on the Number of Pins===
 In versions prior to and including 1.2 of the library, the variable MAX_PIN_CHANGE_PINS was used to limit memory usage.  As of version 1.3 this variable is no longer used, as pins are added dynamically.  You must modify this macro in the `PinChangeIntConfig.h` file.
-===Optimizations:Memory Utilization and Speed===
+==Optimizations:Memory Utilization and Speed==
 There are 3 #define's that control how many interrupt vectors are enabled.  In version 1.4 and later of the library you add this macro to your sketch.  In version 1.3 and earlier of the library you must modify these macros in the `PinChangeIntConfig.h` file. 
 {{{
 //#define       NO_PORTB_PINCHANGES
@@ -171,7 +171,7 @@ This will not set up the corresponding interrupt vectors and (because only 1 POR
 
 Remember:  Once you define that a port has no pin changes on it, make sure you do not attach any interrupts to pins on that port!  There is precious little error checking in this code.
 
-===Optimization:NO_PIN_ARDUINO===
+==Optimization:NO_PIN_ARDUINO==
 New in version 1.5
 
 Upon interrupt, the `PCintPort::PCint()` function is called for that Port.  Within that function, we call the user function that has been assigned by you the programmer.  Here is the section of code (abbreviated for clarity):
@@ -181,12 +181,12 @@ Upon interrupt, the `PCintPort::PCint()` function is called for that Port.  With
       p->PCintFunc(); // this is your user function
 }}}
 Since `PCintPort::arduinoPin` is a static variable, it is available for your function to query.  If you find you don't need it, having it in the code adds bloat and a bit of slowness.  `#define`ing this macro eliminates the `PCintPort::arduinoPin=p->arduinoPin;` from your code entirely.
-===Optimization:NO_PIN_STATE===
+==Optimization:NO_PIN_STATE==
 New in version 1.5
 
 Likewise, if you find you don't care to know what the state of the pin was at the time of the interrupt, `#define`ing this macro eliminates the setting of `PCintPort::pinState` from your code entirely.
 
-===Optimization:DISABLE_PCINT_MULTI_SERVICE===
+==Optimization:DISABLE_PCINT_MULTI_SERVICE==
 For servicing multiple interrupts.
 
 Normally, the PinChangeInt interrupt routine will attempt to handle all changed pins on a port.  This can alleviate the overhead to enter and exit the interrupt routine.  However, if you don't want this- for example, with rapid interrupts your CPU may never exit the interrupt routine- then you can define this macro. In version 1.4 and later of the library you add this macro to your sketch.  In version 1.3 and earlier of the library you must modify this macro in the `PinChangeIntConfig.h` file.
@@ -194,7 +194,7 @@ Normally, the PinChangeInt interrupt routine will attempt to handle all changed 
 #define       DISABLE_PCINT_MULTI_SERVICE
 }}}
 
-==More Information==
+=More Information=
 See the [http://code.google.com/p/arduino-pinchangeint/wiki/Logic Logic] wiki page in this project for more detailed information about the operation of this library.
 
 =Miscellaneous=
@@ -274,7 +274,8 @@ void loop() {
   delay(500);
 }
 }}}
-
+==Assigning Multiple Functions or Modes to a Pin==
+You can only apply a single function and a single mode to pin. If you have the need to, say, perform an action on RISING and another action on FALLING, then set the mode to CHANGE and, inside your ISR, check the value of your pin. If it's low, then you triggered on a FALLING pulse. If it's high, then you triggered on a RISING pulse. But [https://github.com/GreyGnome/EnableInterrupt/blob/master/Interrupt%20Timing.pdf?raw=true watch out for bouncing switches]. Then, call an appropriate subroutine to deal with each case.
 =Examples=
 Here is an example with a pushbutton connected to pin2 and another to pin3.  One side of the pushbutton is connected to ground.  The other side connects to the Arduino pin.
 {{{
