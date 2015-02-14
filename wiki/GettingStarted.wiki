@@ -12,7 +12,7 @@ The best way to get started using this library is to try out the Simple Example,
   # Open your Arduino IDE. Go to the menu item: File->Sketchbook->libraries->PinChangeInt->Examples->SimpleExample328
   # Upload it.
   # Go to the menu item Tools->Serial Monitor. Watch the monitor output.
-  # Flip your switch. You should see the "Pin was interrupted..." output change, as your switch interrupts the processor.
+  # Flip your switch. You should see the "Pin was interrupted..." output change, as your switch interrupts the processor. Interestingly, you may see many interrupts per each switch activation! This is because nearly any switch you use will bounce, and what you think is a simple flip of the switch actually does a lot of bouncing, and can trigger the interrupt many times! The Arduino is fast, and can catch most of these bounces. Dealing with switch bounce is a topic handled [https://www.pololu.com/docs/0J16/4 elsewhere] and [https://github.com/GreyGnome/EnableInterrupt/blob/master/Interrupt%20Timing.pdf elsewhere else].
 
 = Next Steps =
 Go to the Usage page https://code.google.com/p/arduino-pinchangeint/wiki/Usage, and read up on the "Quick and Dirty method." This will help you to program your own interrupt subroutine.
