@@ -25,7 +25,7 @@ void quicfunc() {
   interrupt_count[latest_interrupted_pin]++;
 }
 }}}
-Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal.  In `setup()`, attach an interrupt to your pin.  Here, we attach to pin 2:
+Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal (only 1 mode per pin; again, see the Note below).  In `setup()`, attach an interrupt to your pin.  Here, we attach to pin 2:
 {{{
 attachPinChangeInterrupt(2, quicfunc, CHANGE);
 }}}
@@ -59,6 +59,8 @@ loop() {
   }
 }
 }}}
+_Note: You can only apply a single function and a single mode to pin. If you have the need to, say, perform an action on RISING and another action on FALLING, then set the mode to CHANGE and, inside your ISR, check the value of your pin. If it's low, then you triggered on a FALLING pulse. If it's high, then you triggered on a RISING pulse. But [https://github.com/GreyGnome/EnableInterrupt/blob/master/Interrupt%20Timing.pdf?raw=true watch out for bouncing switches]. Then, call an appropriate subroutine to deal with each case._
+
 New, as of version 1.4, is the ability to apply some optimization switches right in your sketch.  Read over these #defines and decide if any apply to you.  You can add them to your code *ahead* of the `#include <PinChangeInt.h>`.
 {{{
 // You can reduce the memory footprint of this handler by declaring that there will be no pin change interrupts
