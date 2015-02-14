@@ -16,7 +16,7 @@ In your sketch, include:
 {{{
 #include <PinChangeInt.h>
 }}}
-Create a quick function that the library will call whenever your pin(s) are interrupted:
+Create a quick function that the library will call whenever your pin(s) are interrupted. Only 1 mode and 1 function can be applied per pin (see the Note, below):
 {{{
 uint8_t latest_interrupted_pin;
 uint8_t interrupt_count[20]={0}; // 20 possible arduino pins
