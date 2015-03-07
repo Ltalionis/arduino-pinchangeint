@@ -33,7 +33,7 @@ In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable
 {{{
 setup() {
   pinMode(2, INPUT_PULLUP);
-  attachPinChangeInterrutp(2, quicfunc, CHANGE);
+  attachPinChangeInterrupt(2, quicfunc, CHANGE);
   Serial.begin(115200);
   Serial.println("---------------------------------------");
 }
