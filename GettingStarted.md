@@ -1,0 +1,18 @@
+# Quick Start Guide for the PinChangeInt library #
+(if you are a beginner, you are in the right place)
+
+If you have an Arduino Uno or any Arduino based on the ATmega328 processor, you can follow this without change. Users on other Arduinos can just read but not run the program. If you have an Arduino with an ARM processor, you should not even be here. There are no PinChangeInterrupts on ARM-based (32-bit) Arduinos. You want to use good ol' attachInterrupt().
+
+The best way to get started using this library is to try out the Simple Example, included in the distribution. Here's what to do:
+  1. Download the zipfile. Go here to get the latest version: <a href='https://bintray.com/greygnome/generic/PinChangeInt/_latestVersion'><img src='https://api.bintray.com/packages/greygnome/generic/PinChangeInt/images/download.png' /></a> Click on the "Files" menu item.
+  1. Install the library. See https://code.google.com/p/arduino-pinchangeint/wiki/Installation
+  1. Wire a simple switch to port A4 of your Arduino. Attach the other side to Gnd. Double check your wiring!
+  1. Open your Arduino IDE. Go to the menu item: File->Sketchbook->libraries->PinChangeInt->Examples->SimpleExample328
+  1. Upload it.
+  1. Go to the menu item Tools->Serial Monitor. Watch the monitor output.
+  1. Flip your switch. You should see the "Pin was interrupted..." output change, as your switch interrupts the processor. Interestingly, you may see many interrupts per each switch activation! This is because nearly any switch you use will bounce, and what you think is a simple flip of the switch actually does a lot of bouncing, and can trigger the interrupt many times! The Arduino is fast, and can catch most of these bounces. Dealing with switch bounce is a topic handled [elsewhere](https://www.pololu.com/docs/0J16/4) and [elsewhere else](https://github.com/GreyGnome/EnableInterrupt/blob/master/Interrupt%20Timing.pdf).
+
+# Next Steps #
+Go to the Usage page https://code.google.com/p/arduino-pinchangeint/wiki/Usage, and read up on the "Quick and Dirty method." This will help you to program your own interrupt subroutine.
+
+Look at some of the other Examples that were sent along with the program. Things can get pretty complicated pretty quickly, but if you're patient, you should _Time to eat a banana!_ be dealing with interrupts _That was good!_ in little time.

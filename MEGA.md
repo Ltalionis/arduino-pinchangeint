@@ -1,0 +1,30 @@
+# Introduction #
+
+This page is some chitchat about the Arduino MEGA.  This information generally applies to anything Arduino-like based upon the ATmega640/1280/1281/2560/2561 chips.
+
+# I Don't Have a Mega #
+NOTE:  I don't have a Mega, so I rely on you to give me error (or working) reports!  Please give me your feedback; thanks.
+
+# Thanks #
+Thanks to cserveny.tamas for the MEGA code!
+
+# Details #
+
+To sum it up for the Mega:  No Port C, no Port D.  Instead, you get Port J and Port K.  Port B remains. Port J, however, is practically useless because there is only 1 pin available for interrupts.  Most of the Port J pins are not even connected to a header connector.  Caveat Programmer.
+
+From cserveny's notes:
+
+Mega and friends are using port B, J and K for interrupts.  B is working without any modifications.
+
+J is mostly useless, because of the hardware UART. I was not able to get pin change notifications from the TX pin (14), so only 15 left. All other (PORT J) pins are not connected on the Arduino boards.  **If you can get pin 14 to work, let me know.  Please send me an email or post to the bug reports section.  Thanks.  -_Ed_**
+
+K controls Arduino pin A8-A15, working fine.
+
+328/168 boards use C and D.  So in case the lib is compiled with Mega target, the C and D will be disabled.  Also you cannot see port J/K with other targets.  For J and K new flags introduced:
+> NO\_PORTJ\_PINCHANGES and NO\_PORTK\_PINCHANGES.
+
+Note:  To remain consistent, I have treated Port J the same as any other port, and have not included PORTJ\_PINCHANGES as per his suggestion:
+  * _Maybe we should have PORTJ\_PINCHANGES to enable PJ, because they will be most likely unused._
+...But I believe all ports should behave the same, no matter how trivial those ports may seem... there should be no surprises...
+
+Enjoy!

@@ -1,0 +1,10 @@
+# Introduction #
+
+I have conducted extensive speed tests of this library, since its functionality is so fundamental to Interrupts.  See the PDF file.  An ODT file (OpenDocument format) file is available by request.
+
+
+# Details #
+
+I have created a report using LibreOffice.  I present a PDF version for download in the Downloads section..
+
+Note that in the document I discuss a fork of this library, ooPinChangeInt.  See http://code.google.com/p/oopinchangeint/

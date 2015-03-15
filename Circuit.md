@@ -1,0 +1,41 @@
+# Introduction #
+
+This library responds to pin change interrupts.  That is, pins you use will be set as inputs.  The ATmega processors in the Arduino come with resistors built in for you, that when turned on are connected to Vcc.  Thus, it is easiest to connect one pole of your switch to ground and the other to your Arduino pin.
+
+# Details #
+## Configure pin ##
+This is generally how you will configure your digital pin on the Arduino, software-wise.  Pin 5 is shown as an example:
+```
+  pinMode(5, INPUT);
+  digitalWrite(5, HIGH);
+```
+(remember that your Analog Input pins can also be Digital Input or Output pins).
+
+The first statement turns your pin into a digital input pin.
+
+The second statement turns on the Built-in resistor.  The resistor "pulls up" the voltage on the input pin.  This is because one end is connected to Vcc, and the other to the pin.  Under no load, then, the voltage on the input pin will read at Vcc; it has been pulled up to Vcc and hence this type of resistor is called a pull-up resistor.  The value of the ATmega328p's pull-up resistors are between 20-50k ohms.
+
+By having a built-in pull-up resistor you reduce parts count on your project.  So it is easiest to connect a switch between ground and the pin.
+
+## Connecting ##
+Here's a rough schematic:
+
+![http://s19.postimage.org/41phtkvk3/pushbutton.png](http://s19.postimage.org/41phtkvk3/pushbutton.png)
+
+## Device Connected to Vcc ##
+Here I show you how to connect an LED and have it turn on along with your switch:
+### Good ###
+You should connect your LED to Vcc, and have a 150 to 390 ohm pull-up/current-limiting resistor in series with it, connected to the Arduino pin (assuming 5V Vcc).  Then connect your switch to ground and to the Arduino pin.  You turn on the Arduino pin's pull-up resistor as usual.  Here is how you would connect it:
+
+![http://s19.postimage.org/ywpqbf0sj/Arduino_Switch_Vcc.png](http://s19.postimage.org/ywpqbf0sj/Arduino_Switch_Vcc.png)
+
+### Bad ###
+If for some reason you want to connect your switch to Vcc, you may want to wire it this way:
+
+![http://s19.postimage.org/rs7x2dtj7/Arduino_Switch_Bad.png](http://s19.postimage.org/rs7x2dtj7/Arduino_Switch_Bad.png)
+
+The resistor will be 150-390 ohms.  Here, you would not turn on the Arduino's internal resistor.
+
+The problem is, the forward voltage of the LED may be 2-4 volts.  Thus, the voltage at the Arduino pin will go from 0 (switch off) to 1-3 volts.  It is very well possible that the voltage will not be high enough to be recognized by the Arduino.  The ATmega328p spec sheet says that the minimum high voltage on a pin is (0.6 `*` Vcc), which at 5 volts would be 3 volts.  So you would need an LED with a low forward voltage drop.
+
+In short, it's easier to use a switch to pull the Arduino pin down to 0, than to pull it up to Vcc.

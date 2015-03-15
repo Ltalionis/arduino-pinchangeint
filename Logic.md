@@ -1,0 +1,383 @@
+# Introduction #
+
+The ATmega Arduino processors generally two different kinds of interrupts: “external”, and “pin change”.  There are only two external interrupt pins, INT0 and INT1, and they are mapped to Arduino pins 2 and 3.  These interrupts can be set to trigger on RISING or FALLING signal edges, or on low level.  On the other hand the pin change interrupts can be enabled on many more (or all, in the case of ATmega328p-based boards) of the Arduino's signal pins.  They are triggered equally on RISING or FALLING signal edges, so it is up to the interrupt code to determine what happened (did the signal rise, or fall?) and handle it properly.  Furthermore, the pin change interrupts are grouped into “port”s on the ATmega MCU, so if there's an interrupt on any enabled pin, a single interrupt vector (subroutine) is called. There are 3 ports on the Arduino Uno, so there are 3 pin change interrupt vectors for the entire body of 19 pins.  This makes the job of resolving the action on a single pin even more complicated because software is required to resolve the pins as well as determine if we were interested in the type of change that occurred on that pin. The interrupt routine should be fast and accurate but these complications make that challenging,
+
+The PinChangeInt library is designed to handle the Arduino's pin change interrupts.  This is a description of how the Pin Change Interrupts work and how the PinChangeInt library handles the situation. Most of this page focuses on the ATmega328p.
+
+Note that the theory is similar for the ATmega2560, and any other ATmega chip that provides Pin Change Interrupts. The ATmega2560 for example has more External Interrupts, but its PinChange Interrupts are enabled on a different set of its ports: Ports B, J, and K.
+
+
+
+# ATmega Details #
+## ATmega328p Pins and Ports ##
+The Arduino's pins are shown below, in parentheses.  The corresponding pin numbers on the ATmega 328p are shown alongside the diagram of the 28-pin dip package:
+```
+                  +-\/-+
+            PC6  1|    |28  PC5 (AI 5)
+      (D 0) PD0  2|    |27  PC4 (AI 4)
+      (D 1) PD1  3|    |26  PC3 (AI 3)
+      (D 2) PD2  4|    |25  PC2 (AI 2)
+ PWM+ (D 3) PD3  5|    |24  PC1 (AI 1)
+      (D 4) PD4  6|    |23  PC0 (AI 0)
+            VCC  7|    |22  GND
+            GND  8|    |21  AREF
+            PB6  9|    |20  AVCC
+            PB7 10|    |19  PB5 (D 13)
+ PWM+ (D 5) PD5 11|    |18  PB4 (D 12)
+ PWM+ (D 6) PD6 12|    |17  PB3 (D 11) PWM
+      (D 7) PD7 13|    |16  PB2 (D 10) PWM
+      (D 8) PB0 14|    |15  PB1 (D 9) PWM
+                  +----+
+```
+
+Refer to the pin chart at http://www.arduino.cc/en/Hacking/PinMapping168, reproduced above.
+
+The ATmega328 and its kind (ATmega168, ATmega2560) all use PORTs for their input and outputs.  A PORT is essentially a group of pins on the ATmega processor.  They are interesting because the pins grouped in each PORT share some things in common.  For example, you can read all the pins in a PORT in one command.
+
+How do you know which pins are common with which PORTs?  Look at the pin mapping diagram as given in the link or shown above.  The pin names closest to the IC chip:  ie, PD0, PD1, PB6, etc., show you the PORTs.  B, C, and D are the three PORTs available on the ATmega168 and 328.  There are different PORTs on the ATmega2560 used in the Arduino Mega, and not all of those PORTs are available as pins on the Arduino board layout. But the idea is the same.
+
+This is a summary of the Arduino-to-port mappings that are available to you:
+```
+ Arduino Pins         PORT
+ ------------         ----
+ Digital 0-7          D
+ Digital 8-13         B
+ Analog  0-5          C
+```
+
+Why is this important?  It may not be, for you.  This came up when I was programming my AdaEncoder library (http://code.google.com/p/adaencoder/), because when an encoder triggered an interrupt I needed to query the status of both pins on an encoder in order to know what state the device was in.  The easiest thing to do was to query the PORT state register.
+
+## ATmega2560 Available Pins and PORTS ##
+The following pins are usable PinChangeInt pins on the Mega (ATmega1280 and
+ATmega2560-based Arduinos). Cserveny says: "J is mostly useless, because of
+the hardware UART..."
+```
+Arduino              Arduino              Arduino
+  Pin*  PORT PCINT     Pin   PORT PCINT     Pin   PORT PCINT
+  A8     PK0  16       10     PB4   4       SS     PB0   0
+  A9     PK1  17       11     PB5   5       SCK    PB1   1
+ A10     PK2  18       12     PB6   6       MOSI   PB2   2
+ A11     PK3  19       13     PB7   7**     MISO   PB3   3
+ A12     PK4  20       14     PJ1  10
+ A13     PK5  21       15     PJ0   9
+ A14     PK6  22
+ A15     PK7  23
+```
+...indeed, the ATmega2560 chip supports many more Pin Change Interrupt pins but they are unavailable on the Arduino, unless you want to solder teeny tiny wires.
+
+  * `*` Note: Arduino Pin 0 is PE0 (PCINT8), which is RX0 and thus is not supported by this library.  It is the same pin the Arduino uses to upload sketches, and they
+are connected to the FT232RL USB-to-Serial chip (ATmega16U2 on the [R3](https://code.google.com/p/arduino-pinchangeint/source/detail?r=3)).
+  * `**` On the MegaADK, according to http://arduino.cc/en/Main/ArduinoBoardMegaADK:
+"USB Host: MAX3421E. The MAX3421E comunicate with Arduino with the SPI bus. So
+it uses the following pins:
+Digital: 7 (RST), 50 (MISO), 51 (MOSI), 52 (SCK). NB: Please do not use Digital
+pin 7 as input or output because is used in the comunication (sic) with
+MAX3421E "
+
+## ATMega328p Pin Change Interrupts ##
+### Enabling ###
+In order to enable an Interrupt on any of the Arduino pins using the Pin Change Interrupts, you need to do the following:
+  1. Enable interrupts on the pin's Port by setting the proper bit in the PCICR register.
+  1. Enable each pin on that port for interrupts that you care to, by setting the appropriate bit in the appropriate PCMSK0, PCMSK1, or PCMSK2 register with the bit position of the corresponding pin.  PCMSK0 corresponds to PORT B, PCMSK1 corresponds to PORT C, and PCMSK2 corresponds to PORT D.
+**Assuming** that interrupts have not been disabled, that's it.  The ATmega328p will trigger an interrupt on any CHANGE (transition from high to low or low to high voltage) on any enabled input pin on that port.  Each PORT has a single interrupt vector corresponding to it.  This means that if pin 8 and pin 9 both are enabled for interrupts, then the ATmega328p calls the interrupt routine pointed to by the PCINT0\_vect vector because pins 8 and 9 share PORT B.
+
+Note that enabling interrupts globally is as simple as setting the Global Interrupt Enable flag, which is bit 7 of the Status Register (SREG).  This bit is enabled by default.  Also interesting is that the flag is cleared by hardware as soon as an interrupt takes place, and it's set by the Return from Interrupt instruction when the Interrupt routine returns.  It is possible for an interrupt to set this flag, thereby enabling nested interrupts.  This is not done by the PinChangeInt library- that is, nested interrupts are not enabled under the covers.
+
+### Priority ###
+Here is the beginning of Table 11-1 from the ATmega328p datasheet (http://www.atmel.com/dyn/resources/prod_documents/doc8025.pdf).  It shows the priorities of all the interrupts on the computer.  Note that the Pin Change Interrupt interrupts are quite high priority.  If you do not use the external interrupts, then they are second only to the reset signal.  Note, too, that pins set up on PORTB will have a higher interrupt priority than PORT C, which is higher than PORT D.
+```
+Vector No.	Program Address	Source	Interrupt Definition
+1		0x000		RESET	External Pin, Power-on Reset, Brown-out Reset and Watchdog System Reset
+2		0x001		INT0	External Interrupt Request 0
+3		0x002		INT1	External Interrupt Request 1
+4		0x003		PCINT0	Pin Change Interrupt Request 0
+5		0x004		PCINT1 	Pin Change Interrupt Request 1
+6		0x005		PCINT2	Pin Change Interrupt Request 2
+```
+# PinChangeInt Library Details #
+Here is how the library sets up the interrupts, and how it handles them once a pin is interrupted.  This discussion refers to version 1.70beta of the PinChangeInt library.  Get it from the Downloads section of this Project.
+## At Issue ##
+Here stated as simply as possible is what we're trying to achieve:
+> We will at times throughout the lifecycle of our Arduino sketch receive an asynchronous signal an any one or more pins on the computer.  We may be interested in a transition from low to high, from high to low, or both.  At that time we want to interrupt normal program flow and act on the change in a predetermined fashion, at our option unique to each pin.
+## To Do ##
+### Setup ###
+To achieve our goal, we need to do the following:
+  * Assign an interrupt handler to each port from that port's interrupt vector table.  This handler will be a trivial frontend to a common handler; its main job is to set the proper port.
+  * Attach an interrupt, by:
+    * saving the current values of the port's pins.
+    * creating a new pin, which
+      * holds the Arduino pin number
+      * holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)
+      * holds the bitmask- the bit position of the pin on the 8-bit register that represents active interrupts on the port
+    * add the pin to the linked list of pins on this port
+    * add a user function to the pin
+    * set the PCICR flag to enable this port, as mentioned above.
+    * set PCMSKx (where x is 0, 1, or 2) to enable the pin.
+
+### Interrupt ###
+Then, upon interrupt:
+  * The interrupt handler pointed to by the port's interrupt vector obtains the current value of the port register where the interrupt took place.
+  * The interrupt handler calls the port's interrupt handler, which
+    * Determines which pin on the port changed by doing an exclusive-or of the current port value with the previous value.  If you recall, an exclusive or will be a 1 at any bit that's different.  In other words, if the bit was zero and it's still 0, the bit will be zero.  If it was 1 and it's still 1, the bit will be zero.  Otherwise, the bit will be one.  This is how we ignore any pins that didn't change.
+    * We determine if we are interested in the changed pin by AND'ing it with the port's PCMSK.
+    * We now save the current values of the port's pins, so the next interrupt handler can see what changed.
+    * We now traverse the linked list of pins on this port:
+      * If the pin's bit position matches the bit position of a changed pin, we are interested.
+      * Now we check the pin's mode:
+        * If it is CHANGE, or
+        * If it is RISING and the value of the bit is 1, or
+        * If it is FALLING and the value of the bit is not 1,
+      * We found our interrupting pin.  So:
+        * We save the pin's state: its value (HIGH or LOW), its pin number, and its mode.
+        * We call the user function specific to this pin.
+
+## The Toolset ##
+At our disposal is the ATmega328's architecture, as described above.  We will create a C++ class that models its architecture in software.  That is, our class will model the Arduino's pins and the ports in which they are organized.  We start with the ports since they are essentially the containers for the pins, and the pins are contained in the ports just as they are in the Arduino:
+## Defining the Ports and Pins ##
+For each port that you have **not** `#define`d `NO_PORTX_CHANGES` for, an object is created that represents the port in software.  Stripped to its bare essentials and ignoring the `#define` macros that enable you to disable certain features, the port class (from whence the port objects come) looks like this:
+```
+class PCintPort {
+public:
+        volatile        uint8_t&                portInputReg;
+        static          void attachInterrupt(uint8_t pin, PCIntvoidFuncPtr userFunc, int mode);
+        static          void detachInterrupt(uint8_t pin);
+        static  uint8_t curr;
+        static  uint8_t arduinoPin;
+        static  uint8_t pinState;
+        static uint8_t pinmode;
+protected:
+        class PCintPin {
+        public:
+                PCIntvoidFuncPtr PCintFunc;
+                uint8_t         mode;
+                uint8_t         mask;
+                uint8_t arduinoPin;
+                PCintPin* next;
+        };
+        void            addPin(uint8_t arduinoPin,uint8_t mode,PCIntvoidFuncPtr userFunc);
+        void            delPin(uint8_t mask);
+        volatile        uint8_t&                portPCMask;
+        const           uint8_t                 PCICRbit;
+        uint8_t         lastPinView;
+        PCintPin*       createPin(uint8_t arduinoPin, uint8_t mode);
+        PCintPin*       firstPin;
+};
+```
+Here is what each element is for:
+<pre>
+class PCintPort {<br>
+public:<br>
+portInputReg: This is a reference to the memory-mapped address of the register which,<br>
+when read, will give you the status of all the pins on that port.<br>
+attachInterrupt: This is a static method which means its roughly akin to a C function:<br>
+it is a method that can be utilized outside the scope of the class PCintPort.<br>
+And this means that your sketch can call it like this:<br>
+PCintPort::attachInterrupt(arguments...).<br>
+This is the grandaddy method that attaches an interrupt to a pin.<br>
+detachInterrupt: The converse of attachInterrupt(), this detaches an interrupt from a pin.<br>
+Similar in that it is called like:<br>
+PCintPort::detachInterrupt(argument)<br>
+curr: The current value of the PORT upon which an interrupt took place.  This is read as<br>
+soon as possible in the interrupt handler, as there is a small but finite time<br>
+between when an interrupt takes place and when the handler is able to run.<br>
+arduinoPin: The current arduino pin upon which an interrupt took place.  Its value will<br>
+be from 0 to 19.  A0 through A5 are equivalent to 14 through 19.  This is a<br>
+static variable shared by all instances of PCintPort, because there is only<br>
+arduino pin that we will be handling in any instance.<br>
+pinState:  The current state of the pin that interrupted us: either HIGH or LOW.  This<br>
+is static as well for the reason given above.<br>
+pinmode: The mode you have defined for the curret pin.  This is static as well for the<br>
+reason given above.<br>
+</pre>
+The following members are protected; that is, they are only available within objects of
+type PCintPort, or subclasses of the object (there are no subclasses defined in the
+PCintPort library).
+<pre>
+class PCintPin: This class represents any given pin on the port.  It is comprised of:<br>
+PCintFunc: a pointer to the interrupt handler you want to call.<br>
+mode: the pin's mode.<br>
+mask: the bitmask of the pin on the port.  Each pin on a port is represented in one of<br>
+the bits of a register byte.  The mask is simply the bit that is set in the<br>
+proper position for that pin on that port.<br>
+arduinoPin: the arduino pin number for this PCintPin object.<br>
+next: The PCintPins are organized as a linked list attached to the PCintPort.  This<br>
+points to the next pin in the list; if the last, then it points to NULL.<br>
+</pre>
+The rest of the protected PCintPort entries follow:
+<pre>
+addPin: the method that adds a pin to a port.<br>
+delPin: the method that removes a pin from a port.<br>
+portPCMask: this is a reference to a register which indicates by bit position which pin<br>
+on a port is enabled for interrupts.  That is, a pin with a 1 bit in the proper<br>
+position in this byte will interrupt the processor.  A pin with a 0 bit in the<br>
+proper position will not interrupt.<br>
+PCICRbit: Represents the bit in the Pin Change Interrupt Control Register (PCICR) that<br>
+will turn interrupts on for a port.  If the bit in the proper position of the<br>
+PCICR is 1, the port will interrupt if one of its enabled bins changes.  If the<br>
+bit is 0, none of the pins will trigger an interrupt, no matter what the setting<br>
+of the portPCMask.  There are only 3 bit positions used on the ATmega328's PCICR,<br>
+because there are only 3 ports on the processor.<br>
+lastPinView: This state of the pin register at interrupt.  But this is first checked<br>
+against PCintPort::curr to see which pin(s) triggered our current interrupt, then<br>
+it is set to PCintPort::curr.  The difficult question is, how do the pins look in<br>
+an uninterrupted state?  In order to properly gain the first interrupt the values<br>
+of the uninterrupted pins must be known.  Because if the port is checked at<br>
+initialization, who's to say that the pins are in the interrupted or uninterrupted<br>
+state?  This makes the very first interrupt on a pin suspect.  Maybe we actually<br>
+missed the first one.  Maybe we are interrupted and there wasn t really an<br>
+interrupt.  The easy out that I took was to initially just set lastPinView to be<br>
+the state of the port at construction time.<br>
+createPin: a helper function for addPin().  This is where the PCintPin object is created<br>
+and filled in.<br>
+firstPin: the pointer to the first PCintPin of the port.<br>
+<br>
+};<br>
+</pre>
+## Put it All Together ##
+I will grab the algorithm from the ToDo and show how the library puts it into action; the algorithm is recreated below _in italics_.  Line numbers are based on version 1.71beta of the library (file PinChangeInt.h).
+
+### Setup ###
+I say: _To achieve our goal, we need to do the following:
+  * Assign an interrupt handler to each port from that port's interrupt vector table._
+This is done on the following lines:
+```
+499 #ifndef NO_PORTB_PINCHANGES
+500 ISR(PCINT0_vect) {
+501         PCintPort::curr = portB.portInputReg; // version 1.6
+502         portB.PCint();
+503 }
+504 #endif
+505 
+506 #ifndef NO_PORTC_PINCHANGES
+507 ISR(PCINT1_vect) {
+508         PCintPort::curr = portC.portInputReg; // version 1.6
+509         portC.PCint();
+510 }
+511 #endif
+512 
+513 #ifndef NO_PORTD_PINCHANGES
+514 ISR(PCINT2_vect){
+515         PCintPort::curr = portD.portInputReg; // version 1.6
+516         portD.PCint();
+517 }
+518 #endif
+```
+  * _Attach an interrupt, by:
+    * saving the current values of the port's pins._
+```
+390 void PCintPort::attachInterrupt(uint8_t arduinoPin, PCIntvoidFuncPtr userFunc, int mode)
+391 {
+...
+415         port->lastPinView=port->portInputReg;
+```
+    * _creating a new pin, which_
+```
+324 void PCintPort::addPin(uint8_t arduinoPin, uint8_t mode,PCIntvoidFuncPtr userFunc)
+325 {
+326         // Create pin p:  fill in the data.  This is no longer in another method (saves some bytes).
+327         PCintPin* p=new PCintPin;
+```
+      * _holds the Arduino pin number_
+```
+328         p->arduinoPin=arduinoPin;
+```
+      * _holds the mode of the pin (the mode is: How will it interrupt: HIGH, LOW, or CHANGE?)_
+```
+329         p->mode = mode;
+```
+      * _holds the bitmask- the bit position of the pin on the 8-bit register that represents active interrupts on the port_
+```
+331         p->mask = digitalPinToBitMask(arduinoPin); // the mask
+```
+    * _add the pin to the linked list of pins on this port_
+```
+343         // Add to linked list, starting with firstPin
+344         if (firstPin == NULL) firstPin=p;
+345         else {
+346                 PCintPin* tmp=firstPin;
+347                 while (tmp->next != NULL) {
+348                                 tmp=tmp->next;
+349                 };
+350                 tmp->next=p;
+351         }
+```
+    * _add a user function to the pin_
+```
+352         p->PCintFunc=userFunc;
+```
+    * _set the PCICR flag to enable this port, as mentioned above._
+```
+356         PCICR |= PCICRbit;
+```
+    * _set PCMSKx (where x is 0, 1, or 2) to enable the pin._
+```
+357         portPCMask |= p->mask;
+```
+### Responding to an Interrupt ###
+Note: Port B shown; other ports are equivalent.
+
+_Then, upon interrupt:_
+  * _The interrupt handler pointed to by the port's interrupt vector obtains the current value of the port register where the interrupt took place._
+```
+499 #ifndef NO_PORTB_PINCHANGES
+500 ISR(PCINT0_vect) {
+501     PCintPort::curr = portB.portInputReg; // version 1.6
+```
+  * _The interrupt handler calls the port's interrupt handler, which_
+```
+502     portB.PCint();
+```
+    * _Determines which pin(s) on the port changed by doing an exclusive-or of the current port value with the previous value._
+```
+456 void PCintPort::PCint() {
+...
+466         uint8_t changedPins = PCintPort::curr ^ lastPinView;
+```
+    * _We determine if we are interested in the changed pin by AND'ing it with the port's PCMSK._
+```
+467         changedPins &= portPCMask;
+```
+    * _We now save the current values of the port's pins, so the next interrupt handler can see what changed._
+```
+468         lastPinView = PCintPort::curr;
+```
+    * _We now traverse the linked list of pins on this port:_
+```
+470         PCintPin* p = firstPin;
+471         while (p) {
+            ...    
+490             p=p->next;
+```
+      * _If the pin's bit position matches the bit position of a changed pin, we are interested._
+```
+472             if (p->mask & changedPins) { // a changed bit
+```
+        * _Now we check the pin's mode:_
+        * _If it is CHANGE, or_
+```
+475                 if (     p->mode == CHANGE
+```
+        * _If it is RISING and the value of the bit is 1, or_
+```
+476                     || ((p->mode == RISING)  &&  (PCintPort::curr & p->mask))
+```
+        * _If it is FALLING and the value of the bit is not 1,_
+```
+477                     || ((p->mode == FALLING) && !(PCintPort::curr & p->mask)) ) {
+```
+      * _We found an interrupting pin.  So:_
+        * _We save the pin's state: its value (HIGH or LOW), its pin number, and its mode._
+```
+479                     PCintPort::pinState=PCintPort::curr & p->mask ? HIGH : LOW;
+...
+482                     PCintPort::arduinoPin=p->arduinoPin;
+...
+485                     PCintPort::pinmode=p->mode;
+```
+        * _We call the user function specific to this pin._
+```
+487                     p->PCintFunc();
+```
+      * _We continue on with the other pins in this port, to see if any of them changed as well._
+# Conclusion #
+That's how it all works!

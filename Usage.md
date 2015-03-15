@@ -1,0 +1,339 @@
+# Introduction #
+Here's how to use the PinChangeInt library in your own programs. I assume you have properly installed the library.  See the Installation wiki page for more information.
+
+In general, I am writing this for version 2.40-rc2 and above of the PinChangeInt library.
+
+This library has been developed and is supported on the Arduino Uno/Duemilanove and Mega2560.  The author has no other Arduinos.  As mentioned in the Introduction on the Project Home page, the Arduino Nano has been confirmed to work with this library.  In general I believe that Arduino's based on the ATmega168 or ATmega328 will work, as will the Arduino Mega ADK and the Arduino Mega 2560. Be sure to read the README regarding issues with Arduinos based on the 2560 processor.
+
+
+
+# Overview #
+## The Quick and Dirty Method ##
+In your sketch, include:
+```
+#include <PinChangeInt.h>
+```
+Create a quick function that the library will call whenever your pin(s) are interrupted. Only 1 mode and 1 function can be applied per pin (see the Note, below):
+```
+uint8_t latest_interrupted_pin;
+uint8_t interrupt_count[20]={0}; // 20 possible arduino pins
+void quicfunc() {
+  latest_interrupted_pin=PCintPort::arduinoPin;
+  interrupt_count[latest_interrupted_pin]++;
+}
+```
+Decide if you want to interrupt on RISING, FALLING, or CHANGE of signal (only 1 mode per pin; again, see the Note below).  In `setup()`, attach an interrupt to your pin.  Here, we attach to pin 2:
+```
+attachPinChangeInterrupt(2, quicfunc, CHANGE);
+```
+In this case, whenever pin 2 changes, `quicfunc()` will get called, and variable `latest_interrupted_pin` will be set to `2`.  Your `loop()` can poll `latest_interrupted_pin` whenever it wants.  `quicfunc()` can be more elaborate, but it should be quick because it is called by an interrupt.
+```
+setup() {
+  pinMode(2, INPUT_PULLUP);
+  attachPinChangeInterrupt(2, quicfunc, CHANGE);
+  Serial.begin(115200);
+  Serial.println("---------------------------------------");
+}
+
+uint8_t i;
+loop() {
+
+  for (i=0; i < 20; i++) {
+    if (interrupt_count[i] != 0) {
+      count=interrupt_count[i];
+      interrupt_count[i]=0;
+      Serial.print("Count for pin ");
+      if (i < 14) {
+        Serial.print("D");
+        Serial.print(i, DEC);
+      } else {
+        Serial.print("AI");
+        Serial.print(i-14, DEC);
+      }
+      Serial.print(" is ");
+      Serial.println(count, DEC);
+    }
+  }
+}
+```
+_Note: You can only apply a single function and a single mode to pin. If you have the need to, say, perform an action on RISING and another action on FALLING, then set the mode to CHANGE and, inside your ISR, check the value of your pin. If it's low, then you triggered on a FALLING pulse. If it's high, then you triggered on a RISING pulse. But [watch out for bouncing switches](https://github.com/GreyGnome/EnableInterrupt/blob/master/Interrupt%20Timing.pdf?raw=true). Then, call an appropriate subroutine to deal with each case._
+
+New, as of version 1.4, is the ability to apply some optimization switches right in your sketch.  Read over these #defines and decide if any apply to you.  You can add them to your code **ahead** of the `#include <PinChangeInt.h>`.
+```
+// You can reduce the memory footprint of this handler by declaring that there will be no pin change interrupts
+// on any one or two of the three ports.  If only a single port remains, the handler will be declared inline
+// reducing the size and latency of the handler.
+// #define NO_PORTB_PINCHANGES // to indicate that port b will not be used for pin change interrupts
+// #define NO_PORTC_PINCHANGES // to indicate that port c will not be used for pin change interrupts
+// #define NO_PORTD_PINCHANGES // to indicate that port d will not be used for pin change interrupts
+// *** New in version 1.5: ********************************
+// You can reduce the code size by 20-50 bytes, and you can speed up the interrupt routine
+// slightly by declaring that you don't care if the static variables PCintPort::pinState and/or
+// PCintPort::arduinoPin are set and made available to your interrupt routine.
+// #define NO_PIN_STATE        // to indicate that you don't need the pinState
+// #define NO_PIN_NUMBER       // to indicate that you don't need the arduinoPin
+// *********************************************************
+// if there is only one PCInt vector in use the code can be inlined
+// reducing latency and code size
+// define DISABLE_PCINT_MULTI_SERVICE below to limit the handler to servicing a single interrupt per invocation.
+// #define       DISABLE_PCINT_MULTI_SERVICE
+```
+How to decide if that applies to you?  Read over the [Logic](http://code.google.com/p/arduino-pinchangeint/wiki/Logic) page, the **ATmega328p Pins and Ports** section.  Now review your desired pin connections, and correlate your pins with the ATmega328p ports.   If you are not using a particular port, `#define NO_PORTx_PINCHANGES` for that port "x".  For example,
+```
+#define NO_PORTC_PINCHANGES
+```
+**Remember**: When you define that a port has no pin changes, you can **not** attach an interrupt to that port.  Attempting to do so will make things a little... weird...
+
+Next, **ENJOY!** your Arduino and its Pin Change interrupts.
+
+# Reference #
+## Convenient Defines ##
+```
+detachPinChangeInterrupt(pin)		
+attachPinChangeInterrupt(pin,userFunc,mode)  'Note: You dont need to pass the pointer here; just give the function name.'
+getInterruptedPin()
+```
+These are defined to work more conveniently than PCintPort::detachInterrupt(), PCintPort::attachInterrupt(), and PCintPort::getArduinoPin(), respectively. Read below for details on the individual functions.
+## Public Methods and Variables ##
+
+---
+
+```
+int8_t attachInterrupt(uint8_t pin, void *userFunc, int mode)
+```
+Attaches an interrupt to the given pin.  The interrupt will call the function `userFunc`, based on the `mode`.  The arguments are:
+  * `pin` - The pin on the Arduino that you want to attach an interrupt to.
+  * `userFunc` - A user-defined function that the interrupt routine will call.
+  * `mode` - The interrupt will trigger based on `mode`, which can be one of **RISING**, **FALLING**, or **CHANGE**
+Pin Change Interrupts in truth trigger on CHANGE.  Whether it was RISING or FALLING is determined by the Interrupt handler- that is, in software.  This has some consequences to the interrupt code:  You may choose to trigger on FALLING, and the interrupt will take place when the level transitions to LOW, but for a fast-changing signal it is possible to read a HIGH level on the pin.  This is because the state of the pin is checked inside the handler- at a couple of microseconds after the interrupt.  In such a case, your interrupt handler may not run. See the pinState variable below for more discussion.
+
+Returns -1 if unable to create a new PCintPin object, 1 if the interrupt is enabled on a new pin, and 0 if the interrupt is enabled on a previously-enabled pin.
+
+---
+
+```
+void detachInterrupt(uint8_t pin)
+```
+Stops interrupting on the given pin. The PCintPin object is not removed from the list of pins because the delete() function does not work, and it is reused if an interrupt is attached to the pin later. An interrupt can be attached later and its mode (RISING, FALLING, or CHANGE) and user function pointer modified.
+
+---
+
+```
+static uint8_t arduinoPin
+```
+This variable is assigned the value of the latest pin that caused an interrupt.  This pin will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
+
+---
+
+```
+static uint8_t pinState
+```
+This variable is assigned the state of the latest pin that caused an interrupt.  Its value will be either HIGH or LOW (defined as 1 and 0, respectively, in the Arduino.h include file).  Its value is checked at some time (estimated at around 4 microseconds) after the actual interrupt (see next paragraph).  The state will be correct for the current run of the `userFunc`.  Once `userFunc` has exited, another interrupt is free to update this variable, so expect it to change.
+
+If you are using this library to interrupt on fast-changing events, including switches (which may bounce), you must realize that this checking of the pin's state is not immediate. Pin Change Interrupts only trigger on **change** to either level (HIGH or LOW).  Therefore, we must determine by querying the pin what its level is.  _But this can only take place at some time after the interrupt._
+
+How much time?  There are at least 11 push instructions that the compiler generates, which store the status of CPU registers on the stack.  Each one takes 2 clock cycles.  There are 4 clock cycles that the CPU consumes to enter the interrupt.  There are various and sundry other instructions that run which are generated by the compiler, prior to us being able to query the pin's state.  If we estimate 32 instructions of 2 clock cycles (average) each, that's 64 clock cycles.  At 16 MHz, each cycle is 62.5 nanoseconds, so 64 `*` 62.5 == 4 microseconds, more or less.
+
+_Note: The External Interrupts, by contrast, can be set to trigger on low level, on change to either level (HIGH or LOW), by change to HIGH, or by change to LOW- and these triggers are set by the hardware.  So if you set an External Interrupt to trigger on a transition to LOW, then you know immediately afterward that the current logic level of the pin is LOW.  External Interrupts are not used by this library- you can use the Arduino's attachInterrupt function for those._
+
+---
+
+```
+static uint8_t pinmode
+```
+**Only available if you `#define PINMODE` in your sketch.**  This variable will be set to the mode of the interrupting pin; ie, one of CHANGE, RISING, or FALLING.  This was created for testing purposes (after all, it is you who set the mode of the pin), but since it's available I will document it.
+
+---
+
+## PinChangeInt Optimizations ##
+There are a small number of parameters that the programmer can modify to limit the amount of memory the library uses and perhaps speed it up a bit.
+
+**For modern versions of PinChangeInt- 1.4 and above**- insert these parameters _ahead_ of the `#include PinChangeInt.h`, right at the top of your sketch.
+
+**For PinChangeInt versions prior to 1.4**, these parameters _**must**_ be set in the `PinChangeIntConfig.h` file which comes with the package.  They will have no effect if set anywhere else, including your sketch.  Trust me on this one:  You must go to the libraries directory, and edit this config file itself for it to be of use.
+
+## Optimization:MAX\_PIN\_CHANGE\_PINS ##
+### _`*`Obsolete`*`_ Limit on the Number of Pins ###
+In versions prior to and including 1.2 of the library, the variable MAX\_PIN\_CHANGE\_PINS was used to limit memory usage.  As of version 1.3 this variable is no longer used, as pins are added dynamically.  You must modify this macro in the `PinChangeIntConfig.h` file.
+## Optimizations:Memory Utilization and Speed ##
+There are 3 #define's that control how many interrupt vectors are enabled.  In version 1.4 and later of the library you add this macro to your sketch.  In version 1.3 and earlier of the library you must modify these macros in the `PinChangeIntConfig.h` file.
+```
+//#define       NO_PORTB_PINCHANGES
+//#define       NO_PORTC_PINCHANGES
+//#define       NO_PORTD_PINCHANGES
+```
+The corresponding code looks like this:
+```
+#ifndef NO_PORTB_PINCHANGES
+ISR(PCINT0_vect) {
+    PCintPort::pcIntPorts[0].PCint();
+}
+#endif
+```
+So if you know, for example, that you have only pins on PORTB, you can uncomment the lines as follows:
+```
+//#define       NO_PORTB_PINCHANGES
+#define       NO_PORTC_PINCHANGES
+#define       NO_PORTD_PINCHANGES
+```
+This will not set up the corresponding interrupt vectors and (because only 1 PORT remains in use) it will inline the single remaining interrupt routine.  I have measured the effect on interrupt routine speed; see the [Speed wiki page here](http://code.google.com/p/arduino-pinchangeint/wiki/Speed).
+
+Remember:  Once you define that a port has no pin changes on it, make sure you do not attach any interrupts to pins on that port!  There is precious little error checking in this code.
+
+## Optimization:NO\_PIN\_ARDUINO ##
+New in version 1.5
+
+Upon interrupt, the `PCintPort::PCint()` function is called for that Port.  Within that function, we call the user function that has been assigned by you the programmer.  Here is the section of code (abbreviated for clarity):
+```
+      PCintPort::pinState=curr & changedPins ? HIGH : LOW; // version 1.5
+      PCintPort::arduinoPin=p->arduinoPin;
+      p->PCintFunc(); // this is your user function
+```
+Since `PCintPort::arduinoPin` is a static variable, it is available for your function to query.  If you find you don't need it, having it in the code adds bloat and a bit of slowness.  `#define`ing this macro eliminates the `PCintPort::arduinoPin=p->arduinoPin;` from your code entirely.
+## Optimization:NO\_PIN\_STATE ##
+New in version 1.5
+
+Likewise, if you find you don't care to know what the state of the pin was at the time of the interrupt, `#define`ing this macro eliminates the setting of `PCintPort::pinState` from your code entirely.
+
+## Optimization:DISABLE\_PCINT\_MULTI\_SERVICE ##
+For servicing multiple interrupts.
+
+Normally, the PinChangeInt interrupt routine will attempt to handle all changed pins on a port.  This can alleviate the overhead to enter and exit the interrupt routine.  However, if you don't want this- for example, with rapid interrupts your CPU may never exit the interrupt routine- then you can define this macro. In version 1.4 and later of the library you add this macro to your sketch.  In version 1.3 and earlier of the library you must modify this macro in the `PinChangeIntConfig.h` file.
+```
+#define       DISABLE_PCINT_MULTI_SERVICE
+```
+
+# More Information #
+See the [Logic](http://code.google.com/p/arduino-pinchangeint/wiki/Logic) wiki page in this project for more detailed information about the operation of this library.
+
+# Miscellaneous #
+## Serial.print() Inside an ISR ##
+In my tests I have been using the PinChangeInt with rotary encoders and pushbutton switches, and printing status information via the serial line.  As of Arduino 1.0 this will break.  In previous version of Arduino you could get away with it- and you may find me still distributing it in some of my code.  But as of version 1.70beta of the library, I have discontinued developing or maintaining code with this technique.  The Serial library uses an interrupt in order to work and this interacts with the pin change interrupts.  Essentially it will lock up your Arduino, often within a short period of time.
+
+Instead, I have utilized a circular buffer from Sigurður Örn (http://siggiorn.com/?p=460) that I ship with each release (I received permission from Siggi).  Now, as you can see in PinChangeIntTest.pde (delivered starting with version 1.70beta), I populate the buffer and then print it from the main loop.  This can make for some pretty obnoxious-looking output but at least it won't lock up the CPU.
+
+## Use from Another Library ##
+_New as of version 1.70beta_
+
+If you want to use this library from another library, you must define the `LIBCALL_PINCHANGEINT` macro in the .h header file for your library, like this:
+```
+        #ifndef PinChangeInt_h
+        #define LIBCALL_PINCHANGEINT
+        #include "../PinChangeInt/PinChangeInt.h"
+        #endif
+```
+Thus you will be able to include PinChangeInt.h from your sketch and from your library.
+
+## Software Interrupts ##
+It is possible to interrupt an Arduino pin from your own sketch.  This would cause an interrupt just like connecting an external switch to your Arduino, but you can do it right from your own sketch.  I use this to test the speed of the interrupt code, by having the interrupt triggered by a change on the port from the sketch.  You may come up with another use for such a thing.
+
+Remember that you must provision the pin as an **output** pin, so you should not have any switches connected to it.  You can connect an LED or transistor or gate or what have you to the pin.
+
+Note that the Arduino's `digitalWrite()` library function carries some of overhead.  You may want to modify a port by writing directly to a register.  Here's a quick example of creating a software interrupt by writing to a register.  Also, see the `PinChangeIntSpeedTest.pde` sketch that comes in the Examples folder of version 1.3 or higher.  This example was distilled from that sketch.  This example was not tested and is presented here as a guide only.  It should be close.  I have a daughter so I'll test it eventually but for now it's family first :-).
+
+```
+#include PinChangeInt.h
+uint8_t qf0;
+void quicfunc() {
+  qf0=TCNT0;
+}
+
+#define PTEST 2
+volatile uint8_t *pinT_OPort;
+uint8_t pinT_Mask, not_pinT_Mask;
+volatile uint8_t pintest, pinIntLow, pinIntHigh;
+void setup()
+{
+  Serial.begin(115200); Serial.println("---------------------------------------");
+  pinMode(PTEST, OUTPUT); digitalWrite(2, HIGH);
+  // *****************************************************************************
+  // set up ports for output ************ 
+  // *****************************************************************************
+  pinT_OPort=portOutputRegister(digitalPinToPort(PTEST)); // output port
+  pinT_Mask=digitalPinToBitMask(PTEST);                   // mask
+  not_pinT_Mask=pinT_Mask^0xFF;                       	  // not-mask
+  PCintPort::attachInterrupt(PTEST, &quicfunc, CHANGE);   // C technique; v1.3 or earlier
+} // end setup()
+
+uint8_t k=0;
+unsigned long milliStart, milliEnd, elapsed;
+void loop() {
+  k=0;
+  *pinT_OPort|=pinT_Mask;        // PTEST to 1
+  Serial.print("TEST: "); Serial.print(TEST, DEC); Serial.print(" ");
+  Serial.print("test pin mask: "); Serial.print(pinT_Mask, HEX);
+  Serial.print(" interrupted pin: ");
+  Serial.print(PTEST, DEC);
+  delay(2000);
+  Serial.println(" Start...");
+  milliStart=millis();
+  while (k < 10) {
+    i=0;
+    while (i < 10000) {
+      *pinT_OPort&=not_pinT_Mask;    // pintest to 0 ****************************** 16.8 us
+      *pinT_OPort|=pinT_Mask;        // pintest to 1 ****************************** ...to get here
+      i++;
+    }
+    k++;
+  }
+  milliEnd=millis();
+  elapsed=milliEnd-milliStart;
+  Serial.print("Elapsed: "); 
+  Serial.println(elapsed, DEC);
+  delay(500);
+}
+```
+## Assigning Multiple Functions or Modes to a Pin ##
+In short: You can't. You can only apply a single function AND a single mode to pin. If you have the need to, say, perform an action on RISING and another action on FALLING for a particular pin, then set the mode to CHANGE and, inside your ISR, check the value of your pin. If it's low when you read it in the ISR, then you triggered on a FALLING pulse. If it's high, then you triggered on a RISING pulse. But [watch out for bouncing switches](https://github.com/GreyGnome/EnableInterrupt/blob/master/Interrupt%20Timing.pdf?raw=true). Then, call an appropriate subroutine to deal with each case.
+# Examples #
+Here is an example with a pushbutton connected to pin2 and another to pin3.  One side of the pushbutton is connected to ground.  The other side connects to the Arduino pin.
+```
+#include <PinChangeInt.h>
+
+// These two pins are connected for interrupts.
+// Add more Pins at your leisure.
+// For the Analog Input pins, you can use 14, 15, 16, etc.
+// or you can use A0, A1, A2, etc.  The Arduino code comes with #define's
+// for the Analog Input pins.
+#define PIN1 2
+#define PIN2 3
+
+uint8_t latest_interrupted_pin;
+uint8_t interrupt_count[20]={0}; // 20 possible arduino pins
+void quicfunc() {
+  latest_interrupted_pin=PCintPort::arduinoPin;
+  interrupt_count[latest_interrupted_pin]++;
+};
+
+void setup() {
+  pinMode(PIN1, INPUT); digitalWrite(PIN1, HIGH);
+  PCintPort::attachInterrupt(PIN1, &quicfunc, FALLING);  // add more attachInterrupt code as required
+  pinMode(PIN2, INPUT); digitalWrite(PIN2, HIGH);
+  PCintPort::attachInterrupt(PIN2, &quicfunc, FALLING);
+  Serial.begin(115200);
+  Serial.println("---------------------------------------");
+}
+
+uint8_t i;
+void loop() {
+  uint8_t count;
+  Serial.print(".");
+  delay(1000);
+  for (i=0; i < 20; i++) {
+    if (interrupt_count[i] != 0) {
+      count=interrupt_count[i];
+      interrupt_count[i]=0;
+      Serial.print("Count for pin ");
+      if (i < 14) {
+        Serial.print("D");
+        Serial.print(i, DEC);
+      } else {
+        Serial.print("A");
+        Serial.print(i-14, DEC);
+      }
+      Serial.print(" is ");
+      Serial.println(count, DEC);
+    }
+  }
+}
+```
